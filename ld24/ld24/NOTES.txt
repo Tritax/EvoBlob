@@ -1,7 +1,7 @@
 ﻿metroid-vania
 
 power ups
-
+legs		running
 claws		climbing/digging
 gills		swimming
 tail		swinging
