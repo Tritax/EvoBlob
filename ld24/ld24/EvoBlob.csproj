@@ -110,6 +110,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="States\InGame.cs" />
+    <Compile Include="States\StateBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

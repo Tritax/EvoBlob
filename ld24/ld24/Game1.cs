@@ -19,6 +19,9 @@ namespace ld24
       GraphicsDeviceManager graphics;
       SpriteBatch spriteBatch;
 
+      private States.GameStates _state;
+      private States.StateBase _gameState;
+
       public Game1()
       {
          graphics = new GraphicsDeviceManager(this);
@@ -33,7 +36,8 @@ namespace ld24
       /// </summary>
       protected override void Initialize()
       {
-         // TODO: Add your initialization logic here
+         _state = States.GameStates.InGame;
+         _gameState = new States.InGame();
 
          base.Initialize();
       }
@@ -70,8 +74,11 @@ namespace ld24
          if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             this.Exit();
 
-         // TODO: Add your update logic here
-
+         double dt = gameTime.ElapsedGameTime.TotalSeconds;
+         States.GameStates next = _gameState.Update(dt);
+         if (next != _state)
+            SwitchStates(next);
+         
          base.Update(gameTime);
       }
 
@@ -83,9 +90,27 @@ namespace ld24
       {
          GraphicsDevice.Clear(Color.CornflowerBlue);
 
-         // TODO: Add your drawing code here
+         _gameState.Draw(GraphicsDevice);
 
          base.Draw(gameTime);
+      }
+
+      private void SwitchStates(States.GameStates newState)
+      {
+         States.StateBase cur = _gameState;
+         cur.Uninit();
+         switch (newState)
+         {
+            default:
+            case States.GameStates.Quit:
+               this.Exit();
+               break;
+            case States.GameStates.InGame:
+               _gameState = new States.InGame();
+               break;
+         };
+
+         _gameState.Init(GraphicsDevice);
       }
    }
 }
