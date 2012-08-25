@@ -68,7 +68,7 @@ namespace ld24.States
 
       protected Vector2 GetMoveVector()
       {
-         return new Vector2(_curPad.ThumbSticks.Left.X, -_curPad.ThumbSticks.Left.Y);
+         return new Vector2(_curPad.ThumbSticks.Left.X, 0);
       }
 
       protected bool IsButtonDown(Buttons btn)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,13 +10,16 @@ namespace ld24.States
    class InGame : StateBase
    {
       public const int TILE_SIZE = 32;
+      public const int MAX_EVOLVE = 1;
 
       private SpriteBatch _batch;
 
       private Texture2D _blobRoll;
       private Texture2D _blobWalk;
+      private Texture2D _blobJump;
       private Texture2D _sky;
       private Texture2D _tileSet;
+      private Texture2D _goo;
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
@@ -24,6 +28,14 @@ namespace ld24.States
       private int _frame;
 
       private int _evolutionTier = 0;
+      private int _jump = 0;
+
+      private List<Data.Particle> _particleList;
+
+      public InGame()
+      {
+         _particleList = new List<Data.Particle>();
+      }
 
       public override void Init(Game1 g)
       {
@@ -35,6 +47,8 @@ namespace ld24.States
          _sky = g.Content.Load<Texture2D>("sky");
          _blobRoll = g.Content.Load<Texture2D>("blob");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
+         _blobJump = g.Content.Load<Texture2D>("blob_jump");
+         _goo = g.Content.Load<Texture2D>("goo");
       }
 
       public override void Uninit()
@@ -53,15 +67,37 @@ namespace ld24.States
          }
 
          UpdateMovement(dt);
-         if (Game1.Player.Moved)
+         if (Game1.Player.Scroll)
          {
             _skyBox.X += (Game1.Player.MovedLeft ? 1 : -1);
             if (Math.Abs(_skyBox.X) >= _skyBox.Width)
                _skyBox.X = 0;
          }
 
+         if (IsButtonDown(Buttons.B))
+         {
+            Random rnd = new Random();
+            for (int i = 0; i < 5; i++)
+            {
+               Data.Particle p = new Data.Particle(rnd.NextDouble() * 2, 6 + rnd.Next(16));
+               p.SetPosition(rnd.Next(50), rnd.Next(50));
+               _particleList.Add(p);
+            }
+         }
+
          if (IsButtonDown(Buttons.Y))
+         {
             _evolutionTier++;
+            if (_evolutionTier > MAX_EVOLVE)
+               _evolutionTier = 0;
+         }
+
+         for (int i = _particleList.Count - 1; i >= 0; i--)
+         {
+            _particleList[i].Update(dt);
+            if (_particleList[i].IsDead)
+               _particleList.RemoveAt(i);
+         }
 
          return GameStates.InGame;
       }
@@ -70,6 +106,25 @@ namespace ld24.States
       {
          Rectangle bounds = Game1.Player.GetBounds();
          Vector2 move = base.GetMoveVector();
+
+         if (IsButtonDown(Buttons.A) && _jump == 0)
+            _jump = Data.Player.SCROLL_FRAMES;
+
+         if (_jump != 0)
+         {
+            if (_jump > 0)
+            {
+               move.Y = -1;
+               _jump--;
+               if (_jump == 0)
+                  _jump = -Data.Player.SCROLL_FRAMES;
+            }
+            else
+            {
+               move.Y = 1;
+               _jump++;
+            }
+         }
 
          Game1.Player.ApplyMovementVector(move);
       }
@@ -103,7 +158,7 @@ namespace ld24.States
 
       private void DrawPlayer()
       {
-         Vector2 scale = Vector2.One;
+         float scale = 1f;
          SpriteEffects eff = Game1.Player.MovedLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
          Rectangle src = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);                  
          if (Game1.Player.Moved)
@@ -117,6 +172,13 @@ namespace ld24.States
          };
 
          _batch.Draw(tex, Game1.Player.GetPos() + new Vector2(0, 300), src, Color.White, 0f, Vector2.Zero, scale, eff, 0f);
+
+         src.X = 0;
+         foreach (Data.Particle p in _particleList)
+         {
+            scale = (float)p.Size / 32f;
+            _batch.Draw(_goo, p.GetPosition(), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+         }
       }
    }
 }
