@@ -9,7 +9,6 @@ namespace ld24.States
 {
    class InGame : StateBase
    {
-      public const int TILE_SIZE = 32;
       public const int MAX_EVOLVE = 1;
 
       private SpriteBatch _batch;
@@ -32,6 +31,8 @@ namespace ld24.States
 
       private List<Data.Particle> _particleList;
 
+      private Data.Level _level;
+
       public InGame()
       {
          _particleList = new List<Data.Particle>();
@@ -43,12 +44,15 @@ namespace ld24.States
          _skyBox = new Rectangle(0, 0, g.GraphicsDevice.Viewport.Width, g.GraphicsDevice.Viewport.Height);
          _halfWidth = g.GraphicsDevice.Viewport.Width / 2;
 
-         _tileSet = g.Content.Load<Texture2D>("base_tileset");
+         _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
          _blobRoll = g.Content.Load<Texture2D>("blob");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("goo");
+
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example.level");
+         _level = Data.Level.FromFile(filePath);
       }
 
       public override void Uninit()
@@ -168,15 +172,16 @@ namespace ld24.States
 
       private void DrawLevel()
       {
+         _level.Draw(_batch, _tileSet);
       }
 
       private void DrawPlayer()
       {
          float scale = 1f;
          SpriteEffects eff = Game1.Player.MovedLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-         Rectangle src = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);                  
+         Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);                  
          if (Game1.Player.Moved)
-            src.X = (_frame * TILE_SIZE);
+            src.X = (_frame * Game1.TILE_SIZE);
 
          Texture2D tex;
          switch (_evolutionTier)

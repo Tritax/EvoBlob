@@ -1,0 +1,40 @@
+﻿; Sample Level Format
+;	Semi-colons are used to denote comments
+;
+; Properties
+[width] 8
+[height] 8
+;
+[data]
+;
+[tiles]
+        
+        
+        
+        
+        
+        
+        
+!!!!!!!!
+;
+[obstruct]
+        
+        
+        
+        
+        
+        
+        
+########
+;
+[special]
+        
+        
+        
+        
+        
+        
+        
+        
+;
+[eof]

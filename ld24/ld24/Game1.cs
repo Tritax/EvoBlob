@@ -18,6 +18,8 @@ namespace ld24
    /// </summary>
    public class Game1 : Microsoft.Xna.Framework.Game
    {
+      public const int TILE_SIZE = 32;
+
       GraphicsDeviceManager graphics;
       SpriteBatch spriteBatch;
 

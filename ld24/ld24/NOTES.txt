@@ -6,3 +6,11 @@ claws		climbing/digging
 gills		swimming
 tail		swinging
 wings		gliding
+			a hard shell?
+
+level 2 is gonna be crazy.  there will be spikes all over and they can pop you.  
+level 3 is really muddy.
+
+
+lava
+water
