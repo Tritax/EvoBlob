@@ -20,18 +20,23 @@ namespace ld24.States
       private MouseState _prevMouse;
       private MouseState _curMouse;
 
-      public abstract void Init(GraphicsDevice dev);
+      private GamePadState _curPad;
+      private GamePadState _prevPad;
+
+      public abstract void Init(Game1 g);
       public abstract void Uninit();
 
       public GameStates Update(double dt)
       {
          _curKeys = Keyboard.GetState();
          _curMouse = Mouse.GetState();
+         _curPad = GamePad.GetState(PlayerIndex.One);
 
          GameStates ret = OnUpdate(dt);
 
          _prevKeys = _curKeys;
          _prevMouse = _curMouse;
+         _prevPad = _curPad;
 
          return ret;
       }
@@ -59,6 +64,16 @@ namespace ld24.States
       protected Point GetMouse()
       {
          return new Point(_curMouse.X, _curMouse.Y);
+      }
+
+      protected Vector2 GetMoveVector()
+      {
+         return new Vector2(_curPad.ThumbSticks.Left.X, -_curPad.ThumbSticks.Left.Y);
+      }
+
+      protected bool IsButtonDown(Buttons btn)
+      {
+         return _curPad.IsButtonDown(btn) && _prevPad.IsButtonUp(btn);
       }
    }
 }

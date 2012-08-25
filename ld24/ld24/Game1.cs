@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using ld24.Data;
+
 namespace ld24
 {
    /// <summary>
@@ -21,6 +23,8 @@ namespace ld24
 
       private States.GameStates _state;
       private States.StateBase _gameState;
+
+      internal static Player Player = new Player();
 
       public Game1()
       {
@@ -38,6 +42,7 @@ namespace ld24
       {
          _state = States.GameStates.InGame;
          _gameState = new States.InGame();
+         _gameState.Init(this);
 
          base.Initialize();
       }
@@ -110,7 +115,7 @@ namespace ld24
                break;
          };
 
-         _gameState.Init(GraphicsDevice);
+         _gameState.Init(this);
       }
    }
 }
