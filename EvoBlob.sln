@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvoBlob", "ld24\ld24\EvoBlob.csproj", "{3A337208-3482-4723-A5AD-3C9E2B888665}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "evoBlobContent", "ld24\ld24Content\evoBlobContent.contentproj", "{E72BE6A7-66B3-4B55-9372-48462B896024}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A337208-3482-4723-A5AD-3C9E2B888665}.Debug|x86.ActiveCfg = Debug|x86
+		{3A337208-3482-4723-A5AD-3C9E2B888665}.Debug|x86.Build.0 = Debug|x86
+		{3A337208-3482-4723-A5AD-3C9E2B888665}.Release|x86.ActiveCfg = Release|x86
+		{3A337208-3482-4723-A5AD-3C9E2B888665}.Release|x86.Build.0 = Release|x86
+		{E72BE6A7-66B3-4B55-9372-48462B896024}.Debug|x86.ActiveCfg = Debug|x86
+		{E72BE6A7-66B3-4B55-9372-48462B896024}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

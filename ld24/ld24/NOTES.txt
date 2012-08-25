@@ -1,0 +1,7 @@
+﻿metroid-vania
+
+power ups
+claws		climbing/digging
+gills		swimming
+tail		swinging
+wings		gliding
