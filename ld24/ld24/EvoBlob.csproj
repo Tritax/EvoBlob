@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Level.cs" />
     <Compile Include="Data\Particle.cs" />
     <Compile Include="Data\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -16,6 +16,8 @@ namespace ld24.Data
       private Vector2 _pos;
       private Vector2 _dir;
 
+      private double _gravAccum;
+
       public Particle(double max, int size)
       {
          _age = 0;
@@ -60,6 +62,13 @@ namespace ld24.Data
       {
          _age += dt;
          _pos += _dir;
+
+         _gravAccum += dt;
+         if (_gravAccum > .25)
+         {
+            _gravAccum = 0;
+            _dir.Y += 1;
+         }
       }
 
       public bool IsDead { get { return _age >= _max; } }

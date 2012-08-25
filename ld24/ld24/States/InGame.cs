@@ -64,6 +64,11 @@ namespace ld24.States
             _frame++;
             if (_frame > 2)
                _frame = 0;
+
+            if (Game1.Player.Moved)
+            {
+               SpawnGoo(5, 4, 8, .75f);
+            }
          }
 
          UpdateMovement(dt);
@@ -76,13 +81,7 @@ namespace ld24.States
 
          if (IsButtonDown(Buttons.B))
          {
-            Random rnd = new Random();
-            for (int i = 0; i < 5; i++)
-            {
-               Data.Particle p = new Data.Particle(rnd.NextDouble() * 2, 6 + rnd.Next(16));
-               p.SetPosition(rnd.Next(50), rnd.Next(50));
-               _particleList.Add(p);
-            }
+            SpawnGoo(5, 6, 16, 2);
          }
 
          if (IsButtonDown(Buttons.Y))
@@ -127,6 +126,21 @@ namespace ld24.States
          }
 
          Game1.Player.ApplyMovementVector(move);
+      }
+
+      private void SpawnGoo(int num, int minSize, int maxSize, float maxAge)
+      {
+         Vector2 pos = Game1.Player.GetPos();
+         float ang;
+         Random rnd = new Random();
+         for (int i = 0; i < num; i++)
+         {
+            ang = (float)(rnd.NextDouble() * Math.PI);
+            Data.Particle p = new Data.Particle(rnd.NextDouble() * maxAge, minSize + rnd.Next(maxSize));
+            p.SetPosition((int)pos.X + 16, (int)pos.Y + 16);
+            p.SetDirection((int)(Math.Cos(ang) * 2), (int)(-Math.Sin(ang) * 2));
+            _particleList.Add(p);
+         }
       }
 
       public override void Draw(GraphicsDevice dev)
@@ -177,7 +191,7 @@ namespace ld24.States
          foreach (Data.Particle p in _particleList)
          {
             scale = (float)p.Size / 32f;
-            _batch.Draw(_goo, p.GetPosition(), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+            _batch.Draw(_goo, p.GetPosition() + new Vector2(0, 300), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
          }
       }
    }
