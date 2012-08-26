@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace ld24.Data
 {
-   class Badguy
+   public class Badguy
    {
       public const int MAX_WALK_SPEED = 3;
       

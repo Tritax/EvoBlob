@@ -5,10 +5,12 @@ namespace ld24.Data
 {
    public class Powerup
    {
-      public const int MAX_EVOLVE = 2;
+      public const int MAX_EVOLVE = 3;
 
       public const int BLOB_EVOLVE = 0;
+      public const int CHICKEN_EVOLVE = 1;
       public const int FROG_EVOLVE = 2;
+      public const int ROCK_EVOLVE = 3;
       
       public const float FROG_JMP_MUL = 1.75f;
 

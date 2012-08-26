@@ -21,6 +21,8 @@ namespace ld24.States
       private Texture2D _goo;
       private Texture2D _frog;
       private Texture2D _spikey;
+      private Texture2D _proj;
+      private Texture2D _stalag;
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
@@ -38,12 +40,14 @@ namespace ld24.States
       private bool _attacking = false;
 
       private List<Data.Particle> _particleList;
+      private List<Data.Projectile> _projList;
 
       private Data.Level _level;
 
       public InGame()
       {
          _particleList = new List<Data.Particle>();
+         _projList = new List<Data.Projectile>();
       }
 
       public override void Init(Game1 g)
@@ -63,6 +67,8 @@ namespace ld24.States
          _goo = g.Content.Load<Texture2D>("bwgoo");
          _frog = g.Content.Load<Texture2D>("frog");
          _spikey = g.Content.Load<Texture2D>("spikey");
+         _proj = g.Content.Load<Texture2D>("projectile");
+         _stalag = g.Content.Load<Texture2D>("stalagmite");
 
          string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\vertical_test.level");
          _level = Data.Level.FromFile(filePath);
@@ -102,6 +108,25 @@ namespace ld24.States
             _eFrame++;
             if (_eFrame > 2)
                _eFrame = 0;
+         }
+
+         double age = 0;
+         for (int i = _projList.Count - 1; i >= 0; i--)
+         {
+            _projList[i].Update(dt);
+
+            age = _projList[i].GetAge();
+            Data.Badguy guy = _level.CheckEnemyCollideWith(_projList[i].GetBounds());
+            if (guy != null)
+            {
+               age = Data.Projectile.MAX_AGE;
+               _level.RemoveEnemy(guy);
+            }
+
+            if (age >= Data.Projectile.MAX_AGE)
+            {
+               _projList.RemoveAt(i);
+            }
          }
 
          UpdateMovement(dt);
@@ -210,6 +235,21 @@ namespace ld24.States
             _attacking = true;
             _frame = 0;
             _accum = 0;
+
+            if (_evolutionTier == Data.Powerup.ROCK_EVOLVE)
+            {
+               Data.Projectile p = new Data.Projectile();
+               Vector2 pos = Game1.Player.GetPos();
+               if (Game1.Player.MovedLeft)
+                  pos.X -= Game1.TILE_SIZE;
+               else 
+                  pos.X += Game1.TILE_SIZE;
+
+               p.SetPosition(pos);
+               p.SetMoveLeft(Game1.Player.MovedLeft);
+
+               _projList.Add(p);
+            }
          }
       }
       
@@ -375,7 +415,21 @@ namespace ld24.States
          DrawBackground();
          DrawLevel();
          DrawPlayer();
+         DrawProjectiles();
          _batch.End();
+      }
+
+      private void DrawProjectiles()
+      {
+         Vector2 pos;
+         Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);
+         SpriteEffects eff = SpriteEffects.None;
+         foreach (Data.Projectile p in _projList)
+         {
+            eff = p.MovedLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            pos = p.GetPos();
+            _batch.Draw(_proj, pos + _offset, src, Color.White, 0f, Vector2.Zero, 1f, eff, 0f);
+         }
       }
 
       private void DrawBackground()
@@ -459,8 +513,14 @@ namespace ld24.States
          };
 
          Color clr = Color.Blue;
-         if (_evolutionTier == 2)
-            clr = Color.Green;
+         switch (_evolutionTier)
+         {
+            default: break;
+            case Data.Powerup.FROG_EVOLVE:
+               clr = Color.Green; break;
+            case Data.Powerup.ROCK_EVOLVE:
+               clr = Color.Gray; break;
+         };
 
          src.X = (_frame * Game1.TILE_SIZE);
          _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, clr, 0f, Vector2.Zero, scale, eff, 0f);

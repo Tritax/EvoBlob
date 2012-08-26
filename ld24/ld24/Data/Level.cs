@@ -90,6 +90,17 @@ namespace ld24.Data
          return false;
       }
 
+      public Data.Badguy CheckEnemyCollideWith(Rectangle rc)
+      {
+         foreach (Badguy bad in _badGuyList)
+         {
+            if (bad.GetBounds().Intersects(rc))
+               return bad;
+         }
+
+         return null;
+      }
+
       public Data.Powerup CheckPowerupCollide()
       {
          foreach (Powerup up in _powerupList)
@@ -99,6 +110,13 @@ namespace ld24.Data
          }
 
          return null;
+      }
+
+      public void RemoveEnemy(Badguy bad)
+      {
+         _badGuyList.Remove(bad);
+         Point pt = bad.GetTilePos();
+         GetAt(pt.X, pt.Y).Flags = 0;
       }
 
       public void RemovePowerup(Powerup up)
