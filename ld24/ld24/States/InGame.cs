@@ -9,10 +9,9 @@ namespace ld24.States
 {
    class InGame : StateBase
    {
-      public const int MAX_EVOLVE = 1;
-
       private SpriteBatch _batch;
 
+      private Texture2D _blobIdle;
       private Texture2D _blobRoll;
       private Texture2D _blobEat;
       private Texture2D _blobWalk;
@@ -56,6 +55,7 @@ namespace ld24.States
 
          _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
+         _blobIdle = g.Content.Load<Texture2D>("bwblob_idle");
          _blobRoll = g.Content.Load<Texture2D>("bwblob");
          _blobEat = g.Content.Load<Texture2D>("bwblob_eat");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
@@ -116,6 +116,15 @@ namespace ld24.States
          {
             Die();
          }
+         else
+         {
+            Data.Powerup up = _level.CheckPowerupCollide();
+            if (up != null && _attacking)
+            {
+               _evolutionTier = up.GetType();
+               _level.RemovePowerup(up);
+            }
+         }
 
          UpdateControls(dt);
 
@@ -160,7 +169,7 @@ namespace ld24.States
          if (IsButtonDown(Buttons.Y))
          {
             _evolutionTier++;
-            if (_evolutionTier > MAX_EVOLVE)
+            if (_evolutionTier > Data.Powerup.MAX_EVOLVE)
                _evolutionTier = 0;
          }
 #endif
@@ -223,6 +232,9 @@ namespace ld24.States
             if (_jump > 0)
             {
                move.Y = -1;
+               if (_evolutionTier == Data.Powerup.FROG_EVOLVE)
+                  move.Y *= Data.Powerup.FROG_JMP_MUL;
+
                _jump--;
                if (_jump == 0)
                   _jump = -Data.Player.SCROLL_FRAMES;
@@ -244,10 +256,7 @@ namespace ld24.States
                move.X = 0;
             }
 
-            if (IsCollision(r.Left, r.Top + Game1.TILE_SIZE) || IsCollision(r.Right, r.Top + Game1.TILE_SIZE) /*||
-                IsCollision(test + new Vector2(0, a)) ||
-                IsCollision(test + new Vector2(a, a))*/
-               )
+            if (IsCollision(r.Left, r.Top + Game1.TILE_SIZE) || IsCollision(r.Right, r.Top + Game1.TILE_SIZE))
             {
                move.X = 0;
             }
@@ -409,6 +418,9 @@ namespace ld24.States
                      case Data.Tile.FLAG_SPIKEY:
                         decor = _spikey;
                         break;
+                     case Data.Tile.FLAG_FROG:
+                        decor = _frog;
+                        break;
                   };
 
                   if (decor != null)
@@ -430,24 +442,34 @@ namespace ld24.States
          float scale = 1f;
          SpriteEffects eff = Game1.Player.MovedLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
          Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);                  
-         if (Game1.Player.Moved)
-            src.X = (_frame * Game1.TILE_SIZE);
-
+         
          Texture2D tex;
          switch (_evolutionTier)
          {
-            default: tex = _attacking ? _blobEat : _blobRoll; break;
+            default:
+               tex = _blobIdle;
+               if (Game1.Player.Moved)
+                  tex = _blobRoll;
+               
+               if (_attacking)
+                  tex = _blobEat;
+               
+               break;
             case 1: tex = _blobWalk; break;
          };
 
+         Color clr = Color.Blue;
+         if (_evolutionTier == 2)
+            clr = Color.Green;
 
-         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, Color.Green, 0f, Vector2.Zero, scale, eff, 0f);
+         src.X = (_frame * Game1.TILE_SIZE);
+         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, clr, 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;
          foreach (Data.Particle p in _particleList)
          {
             scale = (float)p.Size / 32f;
-            _batch.Draw(_goo, p.GetPosition() + _offset, src, Color.Green * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+            _batch.Draw(_goo, p.GetPosition() + _offset, src, clr * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
          }
       }
    }

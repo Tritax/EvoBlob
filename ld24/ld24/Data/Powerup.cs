@@ -3,13 +3,27 @@ using Microsoft.Xna.Framework;
 
 namespace ld24.Data
 {
-   class Powerup
-   {      
+   public class Powerup
+   {
+      public const int MAX_EVOLVE = 2;
+
+      public const int BLOB_EVOLVE = 0;
+      public const int FROG_EVOLVE = 2;
+      
+      public const float FROG_JMP_MUL = 1.75f;
+
       private Rectangle _bounds;
+      private int _type;
 
       public Powerup()
       {
          _bounds = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);
+         _type = BLOB_EVOLVE;
+      }
+
+      public void SetType(int type)
+      {
+         _type = type;
       }
 
       public void SetPosition(Vector2 pos)
@@ -22,6 +36,11 @@ namespace ld24.Data
       {
          _bounds.X = (int)x;
          _bounds.Y = (int)y;
+      }
+
+      public int GetType()
+      {
+         return _type;
       }
 
       public Vector2 GetPos()

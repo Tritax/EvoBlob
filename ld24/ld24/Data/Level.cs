@@ -32,6 +32,7 @@ namespace ld24.Data
 
       private Vector2 _startPos = new Vector2(-1, -1);
       private List<Badguy> _badGuyList = new List<Badguy>();
+      private List<Powerup> _powerupList = new List<Powerup>();
 
       protected Level()
       {
@@ -89,6 +90,24 @@ namespace ld24.Data
          return false;
       }
 
+      public Data.Powerup CheckPowerupCollide()
+      {
+         foreach (Powerup up in _powerupList)
+         {
+            if (up.GetBounds().Intersects(Game1.Player.GetBounds()))
+               return up;
+         }
+
+         return null;
+      }
+
+      public void RemovePowerup(Powerup up)
+      {
+         _powerupList.Remove(up);
+         Point pt = up.GetTilePos();
+         GetAt(pt.X, pt.Y).Flags = 0;
+      }
+
       private bool Compile()
       {
          for (int y = 0; y < _height; y++)
@@ -105,6 +124,13 @@ namespace ld24.Data
                      Badguy bad = new Badguy();
                      bad.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
                      _badGuyList.Add(bad);
+                     break;
+                  case Tile.FLAG_FROG:
+                     Powerup up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.FROG_EVOLVE);
+
+                     _powerupList.Add(up);
                      break;
                };
             }
