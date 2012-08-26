@@ -80,6 +80,9 @@ namespace LevelEditor
          int imgWidth = _level.GetWidth() * TILE_SIZE;
          int imgHeight = _level.GetHeight() * TILE_SIZE;
 
+         SolidBrush red = new SolidBrush(Color.FromArgb(64, Color.Red));
+         SolidBrush grn = new SolidBrush(Color.FromArgb(64, Color.Green));
+
          _buffer = new Bitmap(imgWidth, imgHeight);
          Graphics g = Graphics.FromImage(_buffer);
          g.FillRectangle(Brushes.White, 0, 0, imgWidth, imgHeight);
@@ -100,7 +103,7 @@ namespace LevelEditor
                for (int x = 0; x < _level.GetWidth(); x++)
                {
                   tile = _level.GetAt(x, y);
-                  if (tile != null && tile.Gfx > 0)
+                  if (tile != null)
                   {
                      dst.X = x * TILE_SIZE;
                      dst.Y = y * TILE_SIZE;
@@ -109,6 +112,7 @@ namespace LevelEditor
                      src.Y = (tile.Gfx / 8) * TILE_SIZE;
 
                      g.DrawImage(img, dst, src, GraphicsUnit.Pixel);
+                     g.FillRectangle(tile.Passable ? grn : red, dst);
                   }
                }
             }
@@ -151,15 +155,23 @@ namespace LevelEditor
 
       private void newToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         _level = new ld24.Data.Level(32, 15);
+         NewLevelDialog dlg = new NewLevelDialog();
+         if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+         {
+            int w = 0, h = 0;
+            if (int.TryParse(dlg.Width, out w) && int.TryParse(dlg.Height, out h))
+            {
+               _level = new ld24.Data.Level(w, h);
 
-         vScrollBar.Minimum = 0;
-         vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE) - levelView.Height;
+               vScrollBar.Minimum = 0;
+               vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE) - levelView.Height;
 
-         hScrollBar.Minimum = 0;
-         hScrollBar.Maximum = (_level.GetWidth() * TILE_SIZE) - levelView.Width;
-         
-         DrawLevelPreview();
+               hScrollBar.Minimum = 0;
+               hScrollBar.Maximum = (_level.GetWidth() * TILE_SIZE) - levelView.Width;
+
+               DrawLevelPreview();
+            }
+         }
       }
 
       private void tilesetOptions_SelectedIndexChanged(object sender, EventArgs e)
@@ -188,7 +200,20 @@ namespace LevelEditor
          ld24.Data.Tile tile = _level.GetAt(x, y);
          if (tile != null)
          {
-            tile.Gfx = (byte)((_selectedTile.Y * 8) + _selectedTile.X);
+            switch (modeOptions.SelectedIndex)
+            {
+               default: break;
+               case 0:  // paint tiles
+                  tile.Gfx = (byte)((_selectedTile.Y * 8) + _selectedTile.X);
+                  break;
+               case 1:  // mark passable
+                  tile.Passable = true;
+                  break;
+               case 2:  // mark obstruction
+                  tile.Passable = false;
+                  break;
+            };
+
             DrawLevelPreview();
          }
       }

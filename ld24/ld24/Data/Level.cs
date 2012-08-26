@@ -45,6 +45,7 @@ namespace ld24.Data
             for (int j = 0; j < _height; j++)
             {
                _tiles[i, j] = new Tile();
+               _tiles[i, j].Passable = true;
             }
          }
       }

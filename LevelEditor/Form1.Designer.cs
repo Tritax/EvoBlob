@@ -40,10 +40,12 @@
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
          this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.toolBox = new System.Windows.Forms.PictureBox();
          this.tilesetOptions = new System.Windows.Forms.ComboBox();
+         this.toolBox = new System.Windows.Forms.PictureBox();
          this._sfd = new System.Windows.Forms.SaveFileDialog();
          this._ofd = new System.Windows.Forms.OpenFileDialog();
+         this.modeOptions = new System.Windows.Forms.ComboBox();
+         this.label1 = new System.Windows.Forms.Label();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
          this.splitContainer1.Panel2.SuspendLayout();
@@ -70,6 +72,8 @@
          // 
          // splitContainer1.Panel2
          // 
+         this.splitContainer1.Panel2.Controls.Add(this.label1);
+         this.splitContainer1.Panel2.Controls.Add(this.modeOptions);
          this.splitContainer1.Panel2.Controls.Add(this.tilesetOptions);
          this.splitContainer1.Panel2.Controls.Add(this.toolBox);
          this.splitContainer1.Size = new System.Drawing.Size(921, 540);
@@ -87,17 +91,21 @@
          // 
          // hScrollBar
          // 
+         this.hScrollBar.LargeChange = 64;
          this.hScrollBar.Location = new System.Drawing.Point(0, 523);
          this.hScrollBar.Name = "hScrollBar";
          this.hScrollBar.Size = new System.Drawing.Size(641, 17);
+         this.hScrollBar.SmallChange = 8;
          this.hScrollBar.TabIndex = 2;
          this.hScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollBar_Scroll);
          // 
          // vScrollBar
          // 
+         this.vScrollBar.LargeChange = 64;
          this.vScrollBar.Location = new System.Drawing.Point(636, 24);
          this.vScrollBar.Name = "vScrollBar";
          this.vScrollBar.Size = new System.Drawing.Size(17, 499);
+         this.vScrollBar.SmallChange = 4;
          this.vScrollBar.TabIndex = 1;
          this.vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar_Scroll);
          // 
@@ -162,15 +170,6 @@
          this.exitToolStripMenuItem.Text = "E&xit";
          this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
          // 
-         // toolBox
-         // 
-         this.toolBox.Location = new System.Drawing.Point(0, 25);
-         this.toolBox.Name = "toolBox";
-         this.toolBox.Size = new System.Drawing.Size(260, 260);
-         this.toolBox.TabIndex = 0;
-         this.toolBox.TabStop = false;
-         this.toolBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.toolBox_MouseClick);
-         // 
          // tilesetOptions
          // 
          this.tilesetOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -181,9 +180,40 @@
          this.tilesetOptions.TabIndex = 1;
          this.tilesetOptions.SelectedIndexChanged += new System.EventHandler(this.tilesetOptions_SelectedIndexChanged);
          // 
+         // toolBox
+         // 
+         this.toolBox.Location = new System.Drawing.Point(0, 25);
+         this.toolBox.Name = "toolBox";
+         this.toolBox.Size = new System.Drawing.Size(260, 260);
+         this.toolBox.TabIndex = 0;
+         this.toolBox.TabStop = false;
+         this.toolBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.toolBox_MouseClick);
+         // 
          // _ofd
          // 
          this._ofd.FileName = "openFileDialog1";
+         // 
+         // modeOptions
+         // 
+         this.modeOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+         this.modeOptions.FormattingEnabled = true;
+         this.modeOptions.Items.AddRange(new object[] {
+            "Draw Tiles",
+            "Mark Passable",
+            "Mark Obstructed"});
+         this.modeOptions.Location = new System.Drawing.Point(71, 291);
+         this.modeOptions.Name = "modeOptions";
+         this.modeOptions.Size = new System.Drawing.Size(188, 21);
+         this.modeOptions.TabIndex = 2;
+         // 
+         // label1
+         // 
+         this.label1.AutoSize = true;
+         this.label1.Location = new System.Drawing.Point(25, 294);
+         this.label1.Name = "label1";
+         this.label1.Size = new System.Drawing.Size(40, 13);
+         this.label1.TabIndex = 3;
+         this.label1.Text = "Mode: ";
          // 
          // Form1
          // 
@@ -199,6 +229,7 @@
          this.splitContainer1.Panel1.ResumeLayout(false);
          this.splitContainer1.Panel1.PerformLayout();
          this.splitContainer1.Panel2.ResumeLayout(false);
+         this.splitContainer1.Panel2.PerformLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
          this.splitContainer1.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.levelView)).EndInit();
@@ -227,6 +258,8 @@
       private System.Windows.Forms.ComboBox tilesetOptions;
       private System.Windows.Forms.SaveFileDialog _sfd;
       private System.Windows.Forms.OpenFileDialog _ofd;
+      private System.Windows.Forms.Label label1;
+      private System.Windows.Forms.ComboBox modeOptions;
    }
 }
 
