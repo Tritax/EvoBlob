@@ -198,7 +198,8 @@
             "Place Stalagmite",
             "Place Fish",
             "Place Spider",
-            "Place Bat"});
+            "Place Bat",
+            "Set Climbable Flag"});
          this.modeOptions.Location = new System.Drawing.Point(71, 291);
          this.modeOptions.Name = "modeOptions";
          this.modeOptions.Size = new System.Drawing.Size(188, 21);

@@ -326,19 +326,13 @@ namespace ld24.States
                Die();
             }
          }
-
-#if DEBUG
-         if (IsButtonPress(Buttons.B))
-         {
-            SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
-         }
-#endif
-
-         if (IsButtonPress(Buttons.Y))
+         
+         if (IsButtonPress(Buttons.Y) || IsKeyPressed(Keys.A))
             _suicideTimer += dt;
          
-         if (_suicideTimer > 0 && IsButtonDown(Buttons.Y))
+         if (_suicideTimer > 0 && (IsButtonDown(Buttons.Y) || IsKeyDown(Keys.A)))
          {
+            _vSuicide.X = (_vSuicide.X < 0 ? 2 : -2);
             _suicideTimer += dt;
             if (_suicideTimer > SUICIDE_TIME)
                Die();
@@ -346,11 +340,7 @@ namespace ld24.States
          else
          {
             _suicideTimer = 0;
-         }
-
-         if (_suicideTimer > 0)
-         {
-            _vSuicide.X = (_vSuicide.X < 0 ? 2 : -2);
+            _vSuicide.X = 0;
          }
 
          for (int i = _particleList.Count - 1; i >= 0; i--)

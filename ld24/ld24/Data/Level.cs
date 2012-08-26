@@ -20,6 +20,7 @@ namespace ld24.Data
       public const byte FLAG_FISH = 9;
       public const byte FLAG_SPIDER = 10;
       public const byte FLAG_BAT = 11;
+      public const byte FLAG_CLIMBABLE = 12;
 
       public byte Gfx { get; set; }
       public bool Passable { get; set; }
@@ -31,7 +32,7 @@ namespace ld24.Data
       private int _width;
       private int _height;
 
-      private byte _tileset;
+      private string _tileset;
       private Tile[,] _tiles;
 
       private Vector2 _startPos = new Vector2(-1, -1);

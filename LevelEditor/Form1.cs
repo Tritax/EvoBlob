@@ -155,6 +155,8 @@ namespace LevelEditor
                return 9;
             case ld24.Data.Tile.FLAG_BAT:
                return 10;
+            case ld24.Data.Tile.FLAG_CLIMBABLE:
+               return 11;
          };
       }
 
@@ -265,6 +267,9 @@ namespace LevelEditor
                   break;
                case 14: // place bat
                   tile.Flags = ld24.Data.Tile.FLAG_BAT;
+                  break;
+               case 15:
+                  tile.Flags = ld24.Data.Tile.FLAG_CLIMBABLE;
                   break;
             };
 
