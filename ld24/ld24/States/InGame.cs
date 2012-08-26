@@ -22,6 +22,7 @@ namespace ld24.States
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
+      private Vector2 _offset;
 
       private double _accum;
       private int _frame;
@@ -51,7 +52,7 @@ namespace ld24.States
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("goo");
 
-         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example2.level");
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example3.level");
          _level = Data.Level.FromFile(filePath);
          if (_level != null)
          {
@@ -85,6 +86,39 @@ namespace ld24.States
             _skyBox.X += (Game1.Player.MovedLeft ? 1 : -1);
             if (Math.Abs(_skyBox.X) >= _skyBox.Width)
                _skyBox.X = 0;
+         }
+
+         Point pt = Game1.Player.GetTilePos();
+         if (_level.GetAt(pt.X, pt.Y).Flags > 0)
+         {
+            bool death = false;
+            switch (_level.GetAt(pt.X, pt.Y).Flags)
+            {
+               default: 
+               case Data.Tile.FLAG_START_POS:
+                  break;
+
+               case Data.Tile.FLAG_WIN_POS:
+                  break;
+
+               case Data.Tile.FLAG_DEATH:
+                  death = true;
+                  break;
+
+               case Data.Tile.FLAG_DROWN:
+                  death = true;
+                  break;
+
+               case Data.Tile.FLAG_SPIKE:
+                  death = true;
+                  break;
+            };
+
+            if (death)
+            {
+               SpawnGoo(5, 6, 16, 2);
+               Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
+            }
          }
 
          if (IsButtonDown(Buttons.B))
@@ -161,21 +195,6 @@ namespace ld24.States
             {
                move.X = 0;
             }
-            //x = (int)((pos.X + move.X) / Game1.TILE_SIZE);
-            //y = (int)(pos.Y / Game1.TILE_SIZE);
-
-            //if (move.X > 0 && !_level.CanWalkAt(x + 1, y))
-            //   move.X = 0;
-            //else if (!_level.CanWalkAt(x, y))
-            //   move.X = 0;
-
-            //if (Game1.Player.Falling)
-            //{
-            //   if (move.X > 0 && !_level.CanWalkAt(x + 1, y + 1))
-            //      move.X = 0;
-            //   else if (!_level.CanWalkAt(x, y + 1))
-            //      move.X = 0;
-            //}
          }
 
          if (_jump == 0)
@@ -194,18 +213,38 @@ namespace ld24.States
                move.Y = 0;
                Game1.Player.SetFalling(false);
             }
-
-            //x = (int)(pos.X / Game1.TILE_SIZE);
-            //y = (int)((pos.Y + 1) / Game1.TILE_SIZE);
-
-            //if (!_level.CanWalkAt(x, y + 1) || !_level.CanWalkAt(x + 1, y + 1))
-            //{
-            //   move.Y = 0;
-            //   Game1.Player.SetFalling(false);
-            //}
          }
 
          Game1.Player.ApplyMovementVector(move);
+         if (Game1.Player.GetPos().X > _halfWidth)
+         {
+            int n = (int)Game1.Player.GetPos().X - _halfWidth;
+            if (n > 0)
+            {
+               // moving right // check offset against remaining level width
+               int tw = (_level.GetWidth() * Game1.TILE_SIZE) - _skyBox.Width;
+               if (_offset.X + n < tw)
+               {
+                  _offset.X += n;
+                  if (_offset.X > tw)
+                     _offset.X = tw;
+
+                  Game1.Player.SetPosition(_halfWidth, Game1.Player.GetPos().Y);
+               }
+            }
+            else
+            {
+               // moving left // check offset against 0
+               if (_offset.X > 0)
+               {
+                  _offset.X += n;
+                  if (_offset.X < 0)
+                     _offset.X = 0;
+
+                  Game1.Player.SetPosition(_halfWidth, Game1.Player.GetPos().Y);
+               }
+            }            
+         }
       }
 
       private void SpawnGoo(int num, int minSize, int maxSize, float maxAge)

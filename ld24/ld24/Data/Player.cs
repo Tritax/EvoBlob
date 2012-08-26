@@ -43,6 +43,12 @@ namespace ld24.Data
          _bounds.Y = (int)pos.Y;
       }
 
+      public void SetPosition(float x, float y)
+      {
+         _bounds.X = (int)x;
+         _bounds.Y = (int)y;
+      }
+
       public void SetFalling(bool b)
       {
          _falling = b;
@@ -51,8 +57,8 @@ namespace ld24.Data
       public Point GetTilePos()
       {
          Point pos = new Point();
-         pos.X = (int)(_bounds.X / Game1.TILE_SIZE);
-         pos.Y = (int)(_bounds.Y / Game1.TILE_SIZE);
+         pos.X = (int)((_bounds.X + 16) / Game1.TILE_SIZE);
+         pos.Y = (int)((_bounds.Y + 16) / Game1.TILE_SIZE);
 
          return pos;
       }

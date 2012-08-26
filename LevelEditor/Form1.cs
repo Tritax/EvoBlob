@@ -16,6 +16,7 @@ namespace LevelEditor
 
       Dictionary<String, Bitmap> _tilesetMap = new Dictionary<String, Bitmap>();
       Bitmap _buffer;
+      Bitmap _toolImg;
       Point _offset;
       ld24.Data.Level _level;
 
@@ -40,32 +41,7 @@ namespace LevelEditor
          String path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tilesets");
          foreach (string file in Directory.GetFiles(path, "*.png"))
          {
-            Bitmap src = (Bitmap)Bitmap.FromFile(file);
-            //Bitmap dst = new Bitmap(128, 512);
-            //Graphics g = Graphics.FromImage(dst);
-            //Rectangle rc = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-
-            //int x = 0, y = 0;
-            //for (int j = 0; j < 8; j++)
-            //{
-            //   for (int i = 0; i < 8; i++)
-            //   {
-            //      rc.X = i * TILE_SIZE;
-            //      rc.Y = j * TILE_SIZE;
-
-            //      g.DrawImage(src, x, y, rc, GraphicsUnit.Pixel);
-            //      x += TILE_SIZE;
-            //      if (x >= dst.Width)
-            //      {
-            //         x = 0;
-            //         y += TILE_SIZE;
-            //      }
-            //   }
-
-            //   break;
-            //}
-
-            _tilesetMap.Add(Path.GetFileNameWithoutExtension(file), src);
+            _tilesetMap.Add(Path.GetFileNameWithoutExtension(file), (Bitmap)Bitmap.FromFile(file));
          }
 
          tilesetOptions.Items.Clear();
@@ -73,6 +49,9 @@ namespace LevelEditor
          {
             tilesetOptions.Items.Add(key);
          }
+
+         path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tools/flags.png");
+         _toolImg = (Bitmap)Bitmap.FromFile(path);
       }
 
       private void DrawLevelPreview()
@@ -88,9 +67,6 @@ namespace LevelEditor
          g.FillRectangle(Brushes.White, 0, 0, imgWidth, imgHeight);
          if (!String.IsNullOrEmpty(_selectedTileset))
          {
-            //int bw = _buffer.Width / TILE_SIZE;
-            //int bh = _buffer.Height / TILE_SIZE;
-
             int w = _level.GetWidth();
             int h = _level.GetHeight();
             
@@ -113,6 +89,17 @@ namespace LevelEditor
 
                      g.DrawImage(img, dst, src, GraphicsUnit.Pixel);
                      g.FillRectangle(tile.Passable ? grn : red, dst);
+                     if (tile.Flags > 0)
+                     {
+                        int t = GetDrawableIndex(tile.Flags);
+                        if (t > -1)
+                        {
+                           src.X = (t * TILE_SIZE);
+                           src.Y = 0;
+
+                           g.DrawImage(_toolImg, dst, src, GraphicsUnit.Pixel);
+                        }
+                     }
                   }
                }
             }
@@ -139,6 +126,25 @@ namespace LevelEditor
             new Rectangle(0, 0, xWidth, xHeight),
             new Rectangle(hScrollBar.Value, vScrollBar.Value, xWidth, xHeight), 
             GraphicsUnit.Pixel);
+      }
+
+      private int GetDrawableIndex(int flag)
+      {
+         switch (flag)
+         {
+            default:
+               return -1;
+            case ld24.Data.Tile.FLAG_DEATH:
+               return 0;
+            case ld24.Data.Tile.FLAG_DROWN:
+               return 4;
+            case ld24.Data.Tile.FLAG_SPIKE:
+               return 3;
+            case ld24.Data.Tile.FLAG_START_POS:
+               return 2;
+            case ld24.Data.Tile.FLAG_WIN_POS:
+               return 1;
+         };
       }
 
       private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
@@ -211,6 +217,21 @@ namespace LevelEditor
                   break;
                case 2:  // mark obstruction
                   tile.Passable = false;
+                  break;
+               case 3:  // set death flag
+                  tile.Flags = ld24.Data.Tile.FLAG_DEATH;
+                  break;
+               case 4:  // set win flag
+                  tile.Flags = ld24.Data.Tile.FLAG_WIN_POS;
+                  break;
+               case 5:  // set start flag
+                  tile.Flags = ld24.Data.Tile.FLAG_START_POS;
+                  break;
+               case 6:  // set spike flag
+                  tile.Flags = ld24.Data.Tile.FLAG_SPIKE;
+                  break;
+               case 7:  // set drown flag
+                  tile.Flags = ld24.Data.Tile.FLAG_DROWN;
                   break;
             };
 

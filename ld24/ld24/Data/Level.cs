@@ -9,6 +9,10 @@ namespace ld24.Data
    public class Tile
    {
       public const byte FLAG_START_POS = 1;
+      public const byte FLAG_DEATH = 2;
+      public const byte FLAG_WIN_POS = 3;
+      public const byte FLAG_SPIKE = 4;
+      public const byte FLAG_DROWN = 5;
 
       public byte Gfx { get; set; }
       public bool Passable { get; set; }

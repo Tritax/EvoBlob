@@ -92,6 +92,9 @@
     <Content Include="tilesets\grassy_tileset.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="tools\flags.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ld24\ld24\EvoBlob.csproj">

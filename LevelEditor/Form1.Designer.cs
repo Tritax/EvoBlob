@@ -40,12 +40,12 @@
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
          this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.label1 = new System.Windows.Forms.Label();
+         this.modeOptions = new System.Windows.Forms.ComboBox();
          this.tilesetOptions = new System.Windows.Forms.ComboBox();
          this.toolBox = new System.Windows.Forms.PictureBox();
          this._sfd = new System.Windows.Forms.SaveFileDialog();
          this._ofd = new System.Windows.Forms.OpenFileDialog();
-         this.modeOptions = new System.Windows.Forms.ComboBox();
-         this.label1 = new System.Windows.Forms.Label();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
          this.splitContainer1.Panel2.SuspendLayout();
@@ -135,40 +135,67 @@
          // newToolStripMenuItem
          // 
          this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-         this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+         this.newToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
          this.newToolStripMenuItem.Text = "&New";
          this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
          // 
          // toolStripMenuItem2
          // 
          this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-         this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
+         this.toolStripMenuItem2.Size = new System.Drawing.Size(100, 6);
          // 
          // openToolStripMenuItem
          // 
          this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-         this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+         this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
          this.openToolStripMenuItem.Text = "&Open";
          this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
          // 
          // saveToolStripMenuItem
          // 
          this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-         this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+         this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
          this.saveToolStripMenuItem.Text = "&Save";
          this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
          // 
          // toolStripMenuItem1
          // 
          this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-         this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+         this.toolStripMenuItem1.Size = new System.Drawing.Size(100, 6);
          // 
          // exitToolStripMenuItem
          // 
          this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-         this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+         this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
          this.exitToolStripMenuItem.Text = "E&xit";
          this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+         // 
+         // label1
+         // 
+         this.label1.AutoSize = true;
+         this.label1.Location = new System.Drawing.Point(25, 294);
+         this.label1.Name = "label1";
+         this.label1.Size = new System.Drawing.Size(40, 13);
+         this.label1.TabIndex = 3;
+         this.label1.Text = "Mode: ";
+         // 
+         // modeOptions
+         // 
+         this.modeOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+         this.modeOptions.FormattingEnabled = true;
+         this.modeOptions.Items.AddRange(new object[] {
+            "Draw Tiles",
+            "Mark Passable",
+            "Mark Obstructed",
+            "Set Death Flag",
+            "Set Win Flag",
+            "Place Start Flag",
+            "Set Spike Flag",
+            "Set Drown Flag"});
+         this.modeOptions.Location = new System.Drawing.Point(71, 291);
+         this.modeOptions.Name = "modeOptions";
+         this.modeOptions.Size = new System.Drawing.Size(188, 21);
+         this.modeOptions.TabIndex = 2;
          // 
          // tilesetOptions
          // 
@@ -192,28 +219,6 @@
          // _ofd
          // 
          this._ofd.FileName = "openFileDialog1";
-         // 
-         // modeOptions
-         // 
-         this.modeOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-         this.modeOptions.FormattingEnabled = true;
-         this.modeOptions.Items.AddRange(new object[] {
-            "Draw Tiles",
-            "Mark Passable",
-            "Mark Obstructed"});
-         this.modeOptions.Location = new System.Drawing.Point(71, 291);
-         this.modeOptions.Name = "modeOptions";
-         this.modeOptions.Size = new System.Drawing.Size(188, 21);
-         this.modeOptions.TabIndex = 2;
-         // 
-         // label1
-         // 
-         this.label1.AutoSize = true;
-         this.label1.Location = new System.Drawing.Point(25, 294);
-         this.label1.Name = "label1";
-         this.label1.Size = new System.Drawing.Size(40, 13);
-         this.label1.TabIndex = 3;
-         this.label1.Text = "Mode: ";
          // 
          // Form1
          // 
