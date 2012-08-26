@@ -66,6 +66,8 @@ namespace ld24.Data
 
          int x = (int)(move.X * MAX_WALK_SPEED);
          int y = (int)(move.Y * MAX_WALK_SPEED);
+         if (x == 0 && y == 0)
+            return;
 
          _bounds.Offset(x, y);
          _moved = true;

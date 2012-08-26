@@ -109,12 +109,12 @@ namespace ld24.States
          return GameStates.InGame;
       }
 
-      private bool IsCollision(Vector2 pos)
+      private bool IsCollision(int x, int y)
       {
-         int x = (int)(pos.X / Game1.TILE_SIZE);
-         int y = (int)(pos.Y / Game1.TILE_SIZE);
+         int tx = (int)(x / Game1.TILE_SIZE);
+         int ty = (int)(y / Game1.TILE_SIZE);
 
-         if (!_level.CanWalkAt(x, y))
+         if (!_level.CanWalkAt(tx, ty))
             return true;
 
          return false;
@@ -151,13 +151,12 @@ namespace ld24.States
                   
          if (move.X != 0)
          {
-            Vector2 test = pos;
-            test.X += move.X;
+            Rectangle r = bounds;
+            r.Offset((int)(move.X * Data.Player.MAX_WALK_SPEED), 0);
 
-            if (IsCollision(test) || 
-                IsCollision(test + new Vector2(a, 0)) ||
+            if (IsCollision(r.Left, r.Top + Game1.TILE_SIZE) || IsCollision(r.Right, r.Top + Game1.TILE_SIZE) /*||
                 IsCollision(test + new Vector2(0, a)) ||
-                IsCollision(test + new Vector2(a, a))
+                IsCollision(test + new Vector2(a, a))*/
                )
             {
                move.X = 0;
@@ -187,10 +186,10 @@ namespace ld24.States
 
          if (move.Y > 0)
          {
-            Vector2 test = pos;
-            test.Y += move.Y;
+            Rectangle r = bounds;
+            r.Offset(0, (int)(move.Y * Data.Player.MAX_WALK_SPEED));
 
-            if (IsCollision(test + new Vector2(0, a)) || IsCollision(test + new Vector2(a, a)))
+            if (IsCollision(r.Left, r.Bottom) || IsCollision(r.Right, r.Bottom))
             {
                move.Y = 0;
                Game1.Player.SetFalling(false);
