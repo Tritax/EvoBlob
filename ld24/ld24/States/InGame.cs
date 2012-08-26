@@ -60,6 +60,7 @@ namespace ld24.States
       private int _evolutionTier = 0;
       private int _jump = 0;
       private bool _attacking = false;
+      private bool _attached = false;
 
       private List<Data.Particle> _particleList;
       private List<Data.Projectile> _projList;
@@ -372,6 +373,17 @@ namespace ld24.States
          return false;
       }
 
+      private bool IsClimbable(int x, int y)
+      {
+         int tx = (int)(x / Game1.TILE_SIZE);
+         int ty = (int)(y / Game1.TILE_SIZE);
+
+         if (_level.GetAt(tx, ty).Flags == Data.Tile.FLAG_CLIMBABLE)
+            return true;
+
+         return false;
+      }
+
       private void UpdateControls(double dt)
       {
          if (_winner)
@@ -412,7 +424,12 @@ namespace ld24.States
          Vector2 pos = Game1.Player.GetPos();
 
          bool jumpBtn = IsButtonPress(Buttons.A) || IsKeyPressed(Keys.Z);
-         if (jumpBtn && _jump == 0 && !Game1.Player.Falling)
+         if (_attached && jumpBtn)
+         {
+            _attached = false;
+            _jump = -Data.Player.SCROLL_FRAMES;
+         }
+         else if (jumpBtn && _jump == 0 && !Game1.Player.Falling)
          {
             Game1.Player.SetFalling(true);
             _jump = Data.Player.SCROLL_FRAMES;
@@ -453,7 +470,7 @@ namespace ld24.States
             }
          }
 
-         if (_jump == 0)
+         if (_jump == 0 && !_attached)
          {
             move.Y = _evolutionTier == Data.Powerup.BAT_EVOLVE ? 0.5f : 1f;
             Game1.Player.SetFalling(true);
@@ -467,7 +484,16 @@ namespace ld24.States
             if (IsCollision(r.Left, r.Top) || IsCollision(r.Right, r.Top))
             {
                move.Y = 0;
-               _jump = -Data.Player.SCROLL_FRAMES;
+               if (IsClimbable(r.Left, r.Top) || IsClimbable(r.Right, r.Top))
+               {
+                  _jump = 0;
+                  _attached = true;
+               }
+               else
+               {
+                  _attached = false;
+                  _jump = -Data.Player.SCROLL_FRAMES;
+               }
             }
 
             if (IsCollision(r.Left, r.Bottom) || IsCollision(r.Right, r.Bottom))
