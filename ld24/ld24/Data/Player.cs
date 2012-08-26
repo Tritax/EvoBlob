@@ -5,8 +5,10 @@ namespace ld24.Data
 {
    class Player
    {
-      public const int BOUNDS_W = 32;
-      public const int BOUNDS_H = 32;
+      public const int BOUNDS_X = 2;
+      public const int BOUNDS_Y = 6;
+      public const int BOUNDS_W = 30;
+      public const int BOUNDS_H = 26;
 
       public const int MAX_WALK_SPEED = 3;
       public const int SCROLL_FRAMES = 16;
@@ -19,7 +21,7 @@ namespace ld24.Data
 
       public Player()
       {
-         _bounds = new Rectangle(0, 0, BOUNDS_W, BOUNDS_H);
+         _bounds = new Rectangle(BOUNDS_X, BOUNDS_Y, BOUNDS_W, BOUNDS_H);
       }
 
       public Vector2 GetPos()

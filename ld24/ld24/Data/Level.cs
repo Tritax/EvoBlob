@@ -130,7 +130,7 @@ namespace ld24.Data
          GetAt(pt.X, pt.Y).Flags = 0;
       }
 
-      private bool Compile()
+      private bool Compile(bool editor)
       {
          bool start = false, end = false;
 
@@ -179,8 +179,11 @@ namespace ld24.Data
             }
          }
 
-         if (!start || !end)
-            return false;
+         if (!editor)
+         {
+            if (!start || !end)
+               return false;
+         }
 
          return true;
       }
@@ -227,7 +230,7 @@ namespace ld24.Data
 
 
 
-      public static Level FromFile(string filePath)
+      public static Level FromFile(string filePath, bool editor = false)
       {
          Level lvl = new Level();
          if (!File.Exists(filePath))
@@ -366,7 +369,7 @@ namespace ld24.Data
          }
 
          Console.WriteLine("Successfully loaded level: " + Path.GetFileNameWithoutExtension(filePath));
-         if (!lvl.Compile())
+         if (!lvl.Compile(editor))
          {
             Console.WriteLine("Unable to compile level!");
             return null;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,8 +11,11 @@ namespace ld24.States
    class InGame : StateBase
    {
       public const double WIN_SPAWN_TIME = 2.0;
+      public const double WIN_LAPSE = 1f;
 
       private SpriteBatch _batch;
+
+      private Texture2D _debugTex;
 
       private Texture2D _blobIdle;
       private Texture2D _blobRoll;
@@ -38,6 +42,7 @@ namespace ld24.States
       private int _eFrame;
 
       private double _winSpawner = 0;
+      private double _winTimer = 0;
 
       private int _evolutionTier = 0;
       private int _jump = 0;
@@ -46,11 +51,14 @@ namespace ld24.States
       private List<Data.Particle> _particleList;
       private List<Data.Projectile> _projList;
 
+      private int _currentLevel = 0;
+      private List<string> _levelList;
       private Data.Level _level;
       private bool _winner = false;
 
       public InGame()
       {
+         _levelList = new List<string>();
          _particleList = new List<Data.Particle>();
          _projList = new List<Data.Projectile>();
       }
@@ -62,6 +70,10 @@ namespace ld24.States
          _halfWidth = g.GraphicsDevice.Viewport.Width / 2;
          _halfHeight = g.GraphicsDevice.Viewport.Height / 2;
 
+#if DEBUG
+         _debugTex = new Texture2D(g.GraphicsDevice, 1, 1);
+         _debugTex.SetData<Color>(new Color[] { Color.White });
+#endif
          _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
          _blobIdle = g.Content.Load<Texture2D>("bwblob_idle");
@@ -75,16 +87,91 @@ namespace ld24.States
          _proj = g.Content.Load<Texture2D>("projectile");
          _stalag = g.Content.Load<Texture2D>("stalagmite");
 
-         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\vertical_test.level");
-         _level = Data.Level.FromFile(filePath);
-         if (_level != null)
-         {
-            Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
-         }
+         ReadLevelList(); 
+         LoadLevel();
       }
 
       public override void Uninit()
       {
+      }
+
+      private void ReadLevelList()
+      {
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\level.dat");
+         if (File.Exists(filePath))
+         {
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+               string line;
+               while ((line = sr.ReadLine()) != null)
+               {
+                  line = line.Trim();
+                  if (line.Length == 0 || line.StartsWith(";"))
+                     continue;
+
+                  _levelList.Add(line);
+               }
+            }
+         }
+      }
+
+      private void ResetFlags()
+      {
+         _winner = false;
+         _accum = 0;
+         _frame = 0;
+         _eAccum = 0;
+         _eFrame = 0;
+         _winSpawner = 0;
+         _evolutionTier = 0;
+         _jump = 0; 
+         _attacking = false;
+         _offset = Vector2.Zero;
+      }
+
+      private void LoadLevel()
+      {
+         ResetFlags();
+         if (_currentLevel >= _levelList.Count)
+            return;
+
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\" +  _levelList[_currentLevel] + ".level");
+         _level = Data.Level.FromFile(filePath);
+         if (_level != null)
+         {
+            Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
+            CalculateOffsetForLevelStart();
+         }
+      }
+
+      private void CalculateOffsetForLevelStart()
+      {
+         _offset = Vector2.Zero;
+         if (_level == null)
+            return;
+
+         Vector2 pos = _level.GetStartPosition() * Game1.TILE_SIZE;
+         if (pos.X > _halfWidth)
+         {
+            int lvlw = _level.GetWidth() * Game1.TILE_SIZE;
+            int rem = lvlw - (int)pos.X;
+
+            if (_halfWidth + rem < _skyBox.Width)
+               _offset.X = -(lvlw - _halfWidth);
+            else 
+               _offset.X = -(pos.X - _halfWidth);
+         }
+
+         if (pos.Y > _halfHeight)
+         {
+            int lvlh = _level.GetHeight() * Game1.TILE_SIZE;
+            int rem = lvlh - (int)pos.Y;
+
+            if (_halfHeight + rem < _skyBox.Height)
+               _offset.Y = -(lvlh - _halfHeight);
+            else
+               _offset.Y = -(pos.Y - _halfHeight);
+         }
       }
 
       private void UpdateTimers(double dt)
@@ -121,11 +208,23 @@ namespace ld24.States
             _winSpawner = 0;
             SpawnGoo(_level.GetWinPos() * Game1.TILE_SIZE, 5, 6, 16, 2, Color.Yellow);
          }
+
+         if (_winner)
+         {
+            _winTimer += dt;
+            if (_winTimer > WIN_LAPSE)
+            {
+               _currentLevel++;
+               LoadLevel();
+            }
+         }
       }
 
       protected override GameStates OnUpdate(double dt)
       {
          UpdateTimers(dt);
+         if (_currentLevel >= _levelList.Count && _winTimer > WIN_LAPSE)
+            return GameStates.Quit;
 
          double age = 0;
          for (int i = _projList.Count - 1; i >= 0; i--)
@@ -228,7 +327,7 @@ namespace ld24.States
 
       private void Die()
       {
-         _offset = Vector2.Zero;
+         CalculateOffsetForLevelStart();
          SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
          Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
       }
@@ -319,7 +418,7 @@ namespace ld24.States
                move.X = 0;
             }
 
-            if (IsCollision(r.Left, r.Top + Game1.TILE_SIZE) || IsCollision(r.Right, r.Top + Game1.TILE_SIZE))
+            if (IsCollision(r.Left, r.Bottom) || IsCollision(r.Right, r.Bottom))
             {
                move.X = 0;
             }
@@ -356,7 +455,7 @@ namespace ld24.States
       private void CheckForScrolling(int dx, int dy)
       {
          Vector2 playerPos = Game1.Player.GetPos();
-         if (playerPos.X + _offset.X > _halfWidth && dx != 0)
+         if ((_offset.X != 0 || playerPos.X + _offset.X > _halfWidth) && dx != 0)
          {
             int lvlw = _level.GetWidth() * Game1.TILE_SIZE;
             int rem = lvlw - (int)playerPos.X;
@@ -377,8 +476,8 @@ namespace ld24.States
                if (_offset.X < 0)
                {
                   _offset.X -= dx;
-                  if (_halfWidth + rem < _skyBox.Width)
-                     _offset.X += dx;
+                  //if (_halfWidth + rem < _skyBox.Width)
+                  //   _offset.X += dx;
                   if (_offset.X > 0)
                      _offset.X = 0;
                }
@@ -406,8 +505,8 @@ namespace ld24.States
                if (_offset.Y < 0)
                {
                   _offset.Y -= dx;
-                  if (_halfHeight + rem < _skyBox.Height)
-                     _offset.Y += dx;
+                  //if (_halfHeight + rem < _skyBox.Height)
+                  //   _offset.Y += dx;
                   if (_offset.Y > 0)
                      _offset.Y = 0;
                }
@@ -561,6 +660,13 @@ namespace ld24.States
          };
 
          src.X = (_frame * Game1.TILE_SIZE);
+#if DEBUG
+         Rectangle rc = Game1.Player.GetBounds();
+         rc.X += (int)_offset.X;
+         rc.Y += (int)_offset.Y;
+
+         _batch.Draw(_debugTex, rc, Color.White * 0.25f);
+#endif 
          _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, DeterminePlayerColor(), 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;

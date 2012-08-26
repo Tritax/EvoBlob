@@ -62,7 +62,6 @@ namespace LevelEditor
          SolidBrush red = new SolidBrush(Color.FromArgb(64, Color.Red));
          SolidBrush grn = new SolidBrush(Color.FromArgb(64, Color.Green));
 
-         _buffer = new Bitmap(imgWidth, imgHeight);
          Graphics g = Graphics.FromImage(_buffer);
          g.FillRectangle(Brushes.White, 0, 0, imgWidth, imgHeight);
          if (!String.IsNullOrEmpty(_selectedTileset))
@@ -174,6 +173,7 @@ namespace LevelEditor
             if (int.TryParse(dlg.Width, out w) && int.TryParse(dlg.Height, out h))
             {
                _level = new ld24.Data.Level(w, h);
+               _buffer = new Bitmap(w * TILE_SIZE, h * TILE_SIZE);
 
                vScrollBar.Minimum = 0;
                vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE) - levelView.Height;
@@ -269,9 +269,11 @@ namespace LevelEditor
       {
          if (_ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
          {
-            _level = ld24.Data.Level.FromFile(_ofd.FileName);
+            _level = ld24.Data.Level.FromFile(_ofd.FileName, true);
             if (_level != null)
             {
+               _buffer = new Bitmap(_level.GetWidth() * TILE_SIZE, _level.GetHeight() * TILE_SIZE);
+
                vScrollBar.Minimum = 0;
                vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE) - levelView.Height;
 
