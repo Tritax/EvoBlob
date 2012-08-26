@@ -239,6 +239,11 @@ namespace ld24.States
             Rectangle r = bounds;
             r.Offset((int)(move.X * Data.Player.MAX_WALK_SPEED), 0);
 
+            if (IsCollision(r.Left, r.Top) || IsCollision(r.Right, r.Top))
+            {
+               move.X = 0;
+            }
+
             if (IsCollision(r.Left, r.Top + Game1.TILE_SIZE) || IsCollision(r.Right, r.Top + Game1.TILE_SIZE) /*||
                 IsCollision(test + new Vector2(0, a)) ||
                 IsCollision(test + new Vector2(a, a))*/
@@ -254,10 +259,16 @@ namespace ld24.States
             Game1.Player.SetFalling(true);
          }
 
-         if (move.Y > 0)
+         if (move.Y != 0)
          {
             Rectangle r = bounds;
             r.Offset(0, (int)(move.Y * Data.Player.MAX_WALK_SPEED));
+
+            if (IsCollision(r.Left, r.Top) || IsCollision(r.Right, r.Top))
+            {
+               move.Y = 0;
+               _jump = -Data.Player.SCROLL_FRAMES;
+            }
 
             if (IsCollision(r.Left, r.Bottom) || IsCollision(r.Right, r.Bottom))
             {
@@ -273,7 +284,7 @@ namespace ld24.States
       private void CheckForScrolling(int dx, int dy)
       {
          Vector2 playerPos = Game1.Player.GetPos();
-         if (playerPos.X > _halfWidth)
+         if (playerPos.X + _offset.X > _halfWidth && dx != 0)
          {
             int lvlw = _level.GetWidth() * Game1.TILE_SIZE;
             int rem = lvlw - (int)playerPos.X;
@@ -302,7 +313,7 @@ namespace ld24.States
             }
          }
 
-         if (playerPos.Y > _halfHeight)
+         if (playerPos.Y + _offset.Y > _halfHeight && dy != 0)
          {
             int lvlh = _level.GetHeight() * Game1.TILE_SIZE;
             int rem = lvlh - (int)playerPos.Y;
