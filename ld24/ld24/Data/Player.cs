@@ -41,14 +41,13 @@ namespace ld24.Data
 
       public void SetPosition(Vector2 pos)
       {
-         _bounds.X = (int)pos.X;
-         _bounds.Y = (int)pos.Y;
+         SetPosition(pos.X, pos.Y);
       }
 
       public void SetPosition(float x, float y)
       {
-         _bounds.X = (int)x;
-         _bounds.Y = (int)y;
+         _bounds.X = (int)x + BOUNDS_X;
+         _bounds.Y = (int)y + BOUNDS_Y;
       }
 
       public void SetFalling(bool b)
@@ -65,22 +64,25 @@ namespace ld24.Data
          return pos;
       }
 
-      public void ApplyMovementVector(Vector2 move)
+      public Point ApplyMovementVector(Vector2 move)
       {
+         Point pt = Point.Zero;
+
          _scroll = false;
          _moved = false;
          if (move.X == 0 && move.Y == 0)
-            return;
+            return pt;
 
-         int x = (int)(move.X * MAX_WALK_SPEED);
-         int y = (int)(move.Y * MAX_WALK_SPEED);
-         if (x == 0 && y == 0)
-            return;
+         pt.X = (int)(move.X * MAX_WALK_SPEED);
+         pt.Y = (int)(move.Y * MAX_WALK_SPEED);
+         if (pt.X == 0 && pt.Y == 0)
+            return pt;
 
-         _bounds.Offset(x, y);
+         _bounds.Offset(pt.X, pt.Y);
          _moved = true;
          _scroll = move.X != 0;
          _left = (move.X < 0);
+         return pt;
       }
    }
 }

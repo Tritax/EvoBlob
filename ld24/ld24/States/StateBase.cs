@@ -8,6 +8,7 @@ namespace ld24.States
 {
    enum GameStates : byte
    {
+      Menu,
       InGame,
       Quit
    }
@@ -80,9 +81,14 @@ namespace ld24.States
          return mv;
       }
 
-      protected bool IsButtonDown(Buttons btn)
+      protected bool IsButtonPress(Buttons btn)
       {
          return _curPad.IsButtonDown(btn) && _prevPad.IsButtonUp(btn);
+      }
+
+      protected bool IsButtonDown(Buttons btn)
+      {
+         return _curPad.IsButtonDown(btn);
       }
    }
 }

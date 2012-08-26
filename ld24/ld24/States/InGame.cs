@@ -11,6 +11,7 @@ namespace ld24.States
    class InGame : StateBase
    {
       public const double WIN_SPAWN_TIME = 2.0;
+      public const double SUICIDE_TIME = 2.5;
       public const double WIN_LAPSE = 1f;
 
       private SpriteBatch _batch;
@@ -43,6 +44,8 @@ namespace ld24.States
 
       private double _winSpawner = 0;
       private double _winTimer = 0;
+      private double _suicideTimer = 0;
+      private Vector2 _vSuicide = Vector2.Zero;
 
       private int _evolutionTier = 0;
       private int _jump = 0;
@@ -124,6 +127,7 @@ namespace ld24.States
          _eFrame = 0;
          _winSpawner = 0;
          _evolutionTier = 0;
+         _suicideTimer = 0;
          _jump = 0; 
          _attacking = false;
          _offset = Vector2.Zero;
@@ -304,15 +308,29 @@ namespace ld24.States
          }
 
 #if DEBUG
-         if (IsButtonDown(Buttons.B))
+         if (IsButtonPress(Buttons.B))
          {
             SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
          }
 #endif
 
-         if (IsButtonDown(Buttons.Y))
+         if (IsButtonPress(Buttons.Y))
+            _suicideTimer += dt;
+         
+         if (_suicideTimer > 0 && IsButtonDown(Buttons.Y))
          {
-            // TODO : suicide
+            _suicideTimer += dt;
+            if (_suicideTimer > SUICIDE_TIME)
+               Die();
+         }
+         else
+         {
+            _suicideTimer = 0;
+         }
+
+         if (_suicideTimer > 0)
+         {
+            _vSuicide.X = (_vSuicide.X < 0 ? 2 : -2);
          }
 
          for (int i = _particleList.Count - 1; i >= 0; i--)
@@ -327,6 +345,7 @@ namespace ld24.States
 
       private void Die()
       {
+         LoadLevel();
          CalculateOffsetForLevelStart();
          SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
          Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
@@ -348,7 +367,7 @@ namespace ld24.States
          if (_winner)
             return;
 
-         bool attackBtn = IsButtonDown(Buttons.X) || IsKeyPressed(Keys.X);
+         bool attackBtn = IsButtonPress(Buttons.X) || IsKeyPressed(Keys.X);
          if (attackBtn)
          {
             _attacking = true;
@@ -382,7 +401,7 @@ namespace ld24.States
          int x, y, a = Game1.TILE_SIZE - 1;
          Vector2 pos = Game1.Player.GetPos();
 
-         bool jumpBtn = IsButtonDown(Buttons.A) || IsKeyPressed(Keys.Z);
+         bool jumpBtn = IsButtonPress(Buttons.A) || IsKeyPressed(Keys.Z);
          if (jumpBtn && _jump == 0 && !Game1.Player.Falling)
          {
             Game1.Player.SetFalling(true);
@@ -448,8 +467,8 @@ namespace ld24.States
             }
          }
 
-         Game1.Player.ApplyMovementVector(move);
-         CheckForScrolling((int)(move.X * Data.Player.MAX_WALK_SPEED), (int)(move.Y * Data.Player.MAX_WALK_SPEED));
+         Point pt = Game1.Player.ApplyMovementVector(move);
+         CheckForScrolling(pt.X, pt.Y);
       }
 
       private void CheckForScrolling(int dx, int dy)
@@ -476,27 +495,26 @@ namespace ld24.States
                if (_offset.X < 0)
                {
                   _offset.X -= dx;
-                  //if (_halfWidth + rem < _skyBox.Width)
-                  //   _offset.X += dx;
                   if (_offset.X > 0)
                      _offset.X = 0;
                }
             }
          }
 
-         if (playerPos.Y + _offset.Y > _halfHeight && dy != 0)
+         if ((_offset.Y != 0 || playerPos.Y + _offset.Y > _halfHeight) && dy != 0)
          {
             int lvlh = _level.GetHeight() * Game1.TILE_SIZE;
+            int edge = lvlh - _halfHeight;
             int rem = lvlh - (int)playerPos.Y;
 
             if (dy > 0)
             {
                // moving down // check offset against remaining level height
-               if (_offset.Y + dy < rem)
+               if (_offset.Y + dy < edge)
                {
                   _offset.Y -= dy;
-                  if (_halfHeight + rem < _skyBox.Height)
-                     _offset.Y += dy;
+                  if (_offset.Y - _halfHeight < -lvlh)
+                     _offset.Y = -(lvlh - _halfHeight);
                }
             }
             else if (dy < 0)
@@ -504,9 +522,7 @@ namespace ld24.States
                // moving up // check offset against 0
                if (_offset.Y < 0)
                {
-                  _offset.Y -= dx;
-                  //if (_halfHeight + rem < _skyBox.Height)
-                  //   _offset.Y += dx;
+                  _offset.Y -= dy;
                   if (_offset.Y > 0)
                      _offset.Y = 0;
                }
@@ -667,7 +683,7 @@ namespace ld24.States
 
          _batch.Draw(_debugTex, rc, Color.White * 0.25f);
 #endif 
-         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, DeterminePlayerColor(), 0f, Vector2.Zero, scale, eff, 0f);
+         _batch.Draw(tex, Game1.Player.GetPos() + _offset + _vSuicide, src, DeterminePlayerColor(), 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;
          foreach (Data.Particle p in _particleList)

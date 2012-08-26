@@ -42,9 +42,8 @@ namespace ld24
       /// </summary>
       protected override void Initialize()
       {
-         _state = States.GameStates.InGame;
-         _gameState = new States.InGame();
-         _gameState.Init(this);
+         _state = States.GameStates.Menu;
+         SwitchStates(_state);
 
          base.Initialize();
       }
@@ -105,19 +104,26 @@ namespace ld24
       private void SwitchStates(States.GameStates newState)
       {
          States.StateBase cur = _gameState;
-         cur.Uninit();
+         if (cur != null)
+            cur.Uninit();
+
          switch (newState)
          {
             default:
             case States.GameStates.Quit:
                this.Exit();
                break;
+            case States.GameStates.Menu:
+               _gameState = new States.MenuState();
+               break;
             case States.GameStates.InGame:
                _gameState = new States.InGame();
                break;
          };
 
-         _gameState.Init(this);
+         _state = newState;
+         if (_gameState != null)
+            _gameState.Init(this);
       }
    }
 }
