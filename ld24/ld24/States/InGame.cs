@@ -47,10 +47,10 @@ namespace ld24.States
 
          _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
-         _blobRoll = g.Content.Load<Texture2D>("blob");
+         _blobRoll = g.Content.Load<Texture2D>("bwblob");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
-         _goo = g.Content.Load<Texture2D>("goo");
+         _goo = g.Content.Load<Texture2D>("bwgoo");
 
          string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example3.level");
          _level = Data.Level.FromFile(filePath);
@@ -116,6 +116,7 @@ namespace ld24.States
 
             if (death)
             {
+               _offset = Vector2.Zero;
                SpawnGoo(5, 6, 16, 2);
                Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
             }
@@ -218,32 +219,32 @@ namespace ld24.States
          Game1.Player.ApplyMovementVector(move);
          if (Game1.Player.GetPos().X > _halfWidth)
          {
-            int n = (int)Game1.Player.GetPos().X - _halfWidth;
+            int lvlw = _level.GetWidth() * Game1.TILE_SIZE;
+            int rem = lvlw - (int)Game1.Player.GetPos().X; 
+
+            int n = (int)(move.X * Data.Player.MAX_WALK_SPEED);
             if (n > 0)
             {
                // moving right // check offset against remaining level width
-               int tw = (_level.GetWidth() * Game1.TILE_SIZE) - _skyBox.Width;
-               if (_offset.X + n < tw)
+               if (_offset.X + n < rem)
                {
-                  _offset.X += n;
-                  if (_offset.X > tw)
-                     _offset.X = tw;
-
-                  Game1.Player.SetPosition(_halfWidth, Game1.Player.GetPos().Y);
+                  _offset.X -= n;
+                  if (_halfWidth + rem < _skyBox.Width)
+                     _offset.X += n;
                }
             }
-            else
+            else if (n < 0)
             {
                // moving left // check offset against 0
-               if (_offset.X > 0)
+               if (_offset.X < 0)
                {
-                  _offset.X += n;
-                  if (_offset.X < 0)
+                  _offset.X -= n;
+                  if (_halfWidth + rem < _skyBox.Width)
+                     _offset.X += n;
+                  if (_offset.X > 0)
                      _offset.X = 0;
-
-                  Game1.Player.SetPosition(_halfWidth, Game1.Player.GetPos().Y);
                }
-            }            
+            }
          }
       }
 
@@ -287,11 +288,13 @@ namespace ld24.States
 
       private void DrawLevel()
       {
-         _level.Draw(_batch, _tileSet);
+         _level.Draw(_batch, _offset, _tileSet);
       }
 
       private void DrawPlayer()
       {
+         Vector2 pos = Game1.Player.GetPos();
+         
          float scale = 1f;
          SpriteEffects eff = Game1.Player.MovedLeft ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
          Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);                  
@@ -305,13 +308,13 @@ namespace ld24.States
             case 1: tex = _blobWalk; break;
          };
 
-         _batch.Draw(tex, Game1.Player.GetPos(), src, Color.White, 0f, Vector2.Zero, scale, eff, 0f);
+         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, Color.Green, 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;
          foreach (Data.Particle p in _particleList)
          {
             scale = (float)p.Size / 32f;
-            _batch.Draw(_goo, p.GetPosition(), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+            _batch.Draw(_goo, p.GetPosition() + _offset, src, Color.Green * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
          }
       }
    }

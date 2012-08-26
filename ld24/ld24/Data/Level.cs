@@ -91,7 +91,7 @@ namespace ld24.Data
          return true;
       }
 
-      public void Draw(SpriteBatch sb, Texture2D tileset)
+      public void Draw(SpriteBatch sb, Vector2 offset, Texture2D tileset)
       {
          Vector2 pos = Vector2.Zero;
          Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);
@@ -106,7 +106,7 @@ namespace ld24.Data
                src.X = (_tiles[x, y].Gfx % 8) * Game1.TILE_SIZE;
                src.Y = (_tiles[x, y].Gfx / 8) * Game1.TILE_SIZE;
 
-               sb.Draw(tileset, pos, src, Color.White);
+               sb.Draw(tileset, offset + pos, src, Color.White);
             }
          }
       }

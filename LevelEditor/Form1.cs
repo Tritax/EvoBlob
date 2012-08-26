@@ -233,6 +233,9 @@ namespace LevelEditor
                case 7:  // set drown flag
                   tile.Flags = ld24.Data.Tile.FLAG_DROWN;
                   break;
+               case 8:  // clear flags
+                  tile.Flags = 0;
+                  break;
             };
 
             DrawLevelPreview();
