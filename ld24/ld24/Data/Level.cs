@@ -178,6 +178,27 @@ namespace ld24.Data
 
                      _powerupList.Add(up);
                      break;
+                  case Tile.FLAG_FISH:
+                     up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.FISH_EVOLVE);
+
+                     _powerupList.Add(up);
+                     break;
+                  case Tile.FLAG_SPIDER:                     
+                     up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.SPIDER_EVOLVE);
+
+                     _powerupList.Add(up);
+                     break;
+                  case Tile.FLAG_BAT:
+                     up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.BAT_EVOLVE);
+
+                     _powerupList.Add(up);
+                     break;
                };
             }
          }

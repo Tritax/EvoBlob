@@ -10,7 +10,9 @@ wings		gliding
 
 level 2 is gonna be crazy.  there will be spikes all over and they can pop you.  
 level 3 is really muddy.
-
+level 4
+level 5
+level 6 is lava-y
 
 lava
 water

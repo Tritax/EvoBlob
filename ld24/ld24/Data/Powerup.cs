@@ -9,6 +9,9 @@ namespace ld24.Data
       public const int CHICKEN_EVOLVE = 1;
       public const int FROG_EVOLVE = 2;
       public const int ROCK_EVOLVE = 3;
+      public const int FISH_EVOLVE = 4;
+      public const int SPIDER_EVOLVE = 5;
+      public const int BAT_EVOLVE = 6;
       public const int WIN_EVOLVE = 255;
       
       public const float FROG_JMP_MUL = 1.75f;

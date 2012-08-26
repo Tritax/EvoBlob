@@ -24,6 +24,12 @@ namespace ld24.States
       private Texture2D _blobWalk;
       private Texture2D _blobJump;
       private Texture2D _blobSpit;
+      private Texture2D _blobGlide;
+      private Texture2D _blobClimbG;
+      private Texture2D _blobClimbC;
+      private Texture2D _blobClimbU;
+      private Texture2D _blobClimbD;
+      private Texture2D _blobSwim;
       private Texture2D _sky;
       private Texture2D _tileSet;
       private Texture2D _goo;
@@ -31,6 +37,9 @@ namespace ld24.States
       private Texture2D _spikey;
       private Texture2D _proj;
       private Texture2D _stalag;
+      private Texture2D _fish;
+      private Texture2D _spider;
+      private Texture2D _bat;
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
@@ -86,11 +95,20 @@ namespace ld24.States
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _blobSpit = g.Content.Load<Texture2D>("bwblob_spit");
+         _blobGlide = g.Content.Load<Texture2D>("bwblob_glide");
+         _blobClimbG = g.Content.Load<Texture2D>("bwblob_climb-ground");
+         _blobClimbC = g.Content.Load<Texture2D>("bwblob_climb-ceiling");
+         _blobClimbU = g.Content.Load<Texture2D>("bwblob_climb-wallup");
+         _blobClimbD = g.Content.Load<Texture2D>("bwblob_climb-walldn");
+         _blobSwim = g.Content.Load<Texture2D>("bwblob_swim");
          _goo = g.Content.Load<Texture2D>("bwgoo");
          _frog = g.Content.Load<Texture2D>("frog");
          _spikey = g.Content.Load<Texture2D>("spikey");
          _proj = g.Content.Load<Texture2D>("projectile");
          _stalag = g.Content.Load<Texture2D>("stalagmite");
+         _fish = g.Content.Load<Texture2D>("fish");
+         _spider = g.Content.Load<Texture2D>("spider");
+         _bat = g.Content.Load<Texture2D>("bat");
 
          ReadLevelList(); 
          LoadLevel();
@@ -447,7 +465,7 @@ namespace ld24.States
 
          if (_jump == 0)
          {
-            move.Y = 1;
+            move.Y = _evolutionTier == Data.Powerup.BAT_EVOLVE ? 0.5f : 1f;
             Game1.Player.SetFalling(true);
          }
 
@@ -623,6 +641,15 @@ namespace ld24.States
                      case Data.Tile.FLAG_STALAGMITE:
                         decor = _stalag;
                         break;
+                     case Data.Tile.FLAG_FISH:
+                        decor = _fish;
+                        break;
+                     case Data.Tile.FLAG_SPIDER:
+                        decor = _spider;
+                        break;
+                     case Data.Tile.FLAG_BAT:
+                        decor = _bat;
+                        break;
                   };
 
                   if (decor != null)
@@ -674,7 +701,10 @@ namespace ld24.States
                   tex = _evolutionTier == Data.Powerup.ROCK_EVOLVE ? _blobSpit : _blobEat;
                
                break;
-            case 1: tex = _blobWalk; break;
+            case Data.Powerup.CHICKEN_EVOLVE: tex = _blobWalk; break;
+            case Data.Powerup.FISH_EVOLVE: tex = _blobSwim; break;
+            case Data.Powerup.SPIDER_EVOLVE: tex = _blobClimbG; break;
+            case Data.Powerup.BAT_EVOLVE: tex = _blobGlide; break;
          };
 
          src.X = (_frame * Game1.TILE_SIZE);
