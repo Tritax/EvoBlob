@@ -14,6 +14,7 @@ namespace ld24.States
       private SpriteBatch _batch;
 
       private Texture2D _blobRoll;
+      private Texture2D _blobEat;
       private Texture2D _blobWalk;
       private Texture2D _blobJump;
       private Texture2D _sky;
@@ -50,6 +51,7 @@ namespace ld24.States
          _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
          _blobRoll = g.Content.Load<Texture2D>("bwblob");
+         _blobEat = g.Content.Load<Texture2D>("bwblob_eat");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("bwgoo");
@@ -124,6 +126,7 @@ namespace ld24.States
             }
          }
 
+#if DEBUG
          if (IsButtonDown(Buttons.B))
          {
             SpawnGoo(5, 6, 16, 2);
@@ -135,6 +138,7 @@ namespace ld24.States
             if (_evolutionTier > MAX_EVOLVE)
                _evolutionTier = 0;
          }
+#endif
 
          for (int i = _particleList.Count - 1; i >= 0; i--)
          {
@@ -164,7 +168,8 @@ namespace ld24.States
          int x, y, a = Game1.TILE_SIZE - 1;
          Vector2 pos = Game1.Player.GetPos();
 
-         if (IsButtonDown(Buttons.A) && _jump == 0 && !Game1.Player.Falling)
+         bool jumpBtn = IsButtonDown(Buttons.A) || IsKeyPressed(Keys.Z);
+         if (jumpBtn && _jump == 0 && !Game1.Player.Falling)
          {
             Game1.Player.SetFalling(true);
             _jump = Data.Player.SCROLL_FRAMES;
