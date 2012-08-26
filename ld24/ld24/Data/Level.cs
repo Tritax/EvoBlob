@@ -6,20 +6,24 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ld24.Data
 {
-   class Tile
+   public class Tile
    {
+      public const byte FLAG_START_POS = 1;
+
       public byte Gfx { get; set; }
       public bool Passable { get; set; }
       public byte Flags { get; set; }
    }
 
-   class Level
+   public class Level
    {
       private int _width;
       private int _height;
 
       private byte _tileset;
       private Tile[,] _tiles;
+
+      private Vector2 _startPos = new Vector2(-1, -1);
 
       protected Level()
       {
@@ -47,6 +51,7 @@ namespace ld24.Data
 
       public int GetWidth() { return _width; }
       public int GetHeight() { return _height; }
+      public Vector2 GetStartPosition() { return _startPos; }
 
       public Tile GetAt(int x, int y)
       {
@@ -62,6 +67,23 @@ namespace ld24.Data
             return false;
 
          return _tiles[x, y].Passable;
+      }
+
+      private bool Compile()
+      {
+         for (int y = 0; y < _height; y++)
+         {
+            for (int x = 0; x < _width; x++)
+            {
+               if (_tiles[x, y].Flags == Tile.FLAG_START_POS)
+                  _startPos = new Vector2(x, y);
+            }
+         }
+
+         if (_startPos.X == -1 || _startPos.Y == -1)
+            return false;
+
+         return true;
       }
 
       public void Draw(SpriteBatch sb, Texture2D tileset)
@@ -80,6 +102,46 @@ namespace ld24.Data
                src.Y = (_tiles[x, y].Gfx / 8) * Game1.TILE_SIZE;
 
                sb.Draw(tileset, pos, src, Color.White);
+            }
+         }
+      }
+
+      public void Save(string filePath)
+      {
+         using (StreamWriter sw = new StreamWriter(filePath))
+         {
+            sw.WriteLine("[width]" + _width);
+            sw.WriteLine("[height]" + _height);
+            sw.WriteLine("[data]");
+            sw.WriteLine("[tiles]");
+            for (int y = 0; y < _height; y++)
+            {
+               for (int x = 0; x < _width; x++)
+               {
+                  sw.Write((char)(_tiles[x, y].Gfx + 32));
+               }
+
+               sw.Write("\r\n");
+            }
+            sw.WriteLine("[obstruct]");
+            for (int y = 0; y < _height; y++)
+            {
+               for (int x = 0; x < _width; x++)
+               {
+                  sw.Write((char)(_tiles[x, y].Passable ? ' ' : '#'));
+               }
+
+               sw.Write("\r\n");
+            }
+            sw.WriteLine("[special]");
+            for (int y = 0; y < _height; y++)
+            {
+               for (int x = 0; x < _width; x++)
+               {
+                  sw.Write((char)(_tiles[x, y].Flags + 32));
+               }
+
+               sw.Write("\r\n");
             }
          }
       }
@@ -225,6 +287,12 @@ namespace ld24.Data
          }
 
          Console.WriteLine("Successfully loaded level: " + Path.GetFileNameWithoutExtension(filePath));
+         if (!lvl.Compile())
+         {
+            Console.WriteLine("Unable to compile level!");
+            return null;
+         }
+
          return lvl;
       }
    }

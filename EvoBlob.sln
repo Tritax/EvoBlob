@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvoBlob", "ld24\ld24\EvoBlo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "evoBlobContent", "ld24\ld24Content\evoBlobContent.contentproj", "{E72BE6A7-66B3-4B55-9372-48462B896024}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelEditor", "LevelEditor\LevelEditor.csproj", "{72DCC4EA-7ADA-42AC-8394-FFA647595D64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -17,6 +19,10 @@ Global
 		{3A337208-3482-4723-A5AD-3C9E2B888665}.Release|x86.Build.0 = Release|x86
 		{E72BE6A7-66B3-4B55-9372-48462B896024}.Debug|x86.ActiveCfg = Debug|x86
 		{E72BE6A7-66B3-4B55-9372-48462B896024}.Release|x86.ActiveCfg = Release|x86
+		{72DCC4EA-7ADA-42AC-8394-FFA647595D64}.Debug|x86.ActiveCfg = Debug|x86
+		{72DCC4EA-7ADA-42AC-8394-FFA647595D64}.Debug|x86.Build.0 = Debug|x86
+		{72DCC4EA-7ADA-42AC-8394-FFA647595D64}.Release|x86.ActiveCfg = Release|x86
+		{72DCC4EA-7ADA-42AC-8394-FFA647595D64}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

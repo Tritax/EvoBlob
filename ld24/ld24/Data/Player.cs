@@ -8,13 +8,14 @@ namespace ld24.Data
       public const int BOUNDS_W = 32;
       public const int BOUNDS_H = 32;
 
-      public const int MAX_WALK_SPEED = 2;
-      public const int SCROLL_FRAMES = 20;
+      public const int MAX_WALK_SPEED = 3;
+      public const int SCROLL_FRAMES = 16;
 
       private Rectangle _bounds;
       private bool _scroll = false;
       private bool _moved = false;
       private bool _left = true;
+      private bool _falling = true;
 
       public Player()
       {
@@ -31,10 +32,31 @@ namespace ld24.Data
          return _bounds;
       }
 
+      public bool Falling { get { return _falling; } }
       public bool Moved { get { return _moved; } }
       public bool MovedLeft { get { return _left; } }
       public bool Scroll { get { return _scroll; } }
-      
+
+      public void SetPosition(Vector2 pos)
+      {
+         _bounds.X = (int)pos.X;
+         _bounds.Y = (int)pos.Y;
+      }
+
+      public void SetFalling(bool b)
+      {
+         _falling = b;
+      }
+
+      public Point GetTilePos()
+      {
+         Point pos = new Point();
+         pos.X = (int)(_bounds.X / Game1.TILE_SIZE);
+         pos.Y = (int)(_bounds.Y / Game1.TILE_SIZE);
+
+         return pos;
+      }
+
       public void ApplyMovementVector(Vector2 move)
       {
          _scroll = false;

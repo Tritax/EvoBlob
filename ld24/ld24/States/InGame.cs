@@ -51,8 +51,12 @@ namespace ld24.States
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("goo");
 
-         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example.level");
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example2.level");
          _level = Data.Level.FromFile(filePath);
+         if (_level != null)
+         {
+            Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
+         }
       }
 
       public override void Uninit()
@@ -105,13 +109,29 @@ namespace ld24.States
          return GameStates.InGame;
       }
 
+      private bool IsCollision(Vector2 pos)
+      {
+         int x = (int)(pos.X / Game1.TILE_SIZE);
+         int y = (int)(pos.Y / Game1.TILE_SIZE);
+
+         if (!_level.CanWalkAt(x, y))
+            return true;
+
+         return false;
+      }
+      
       private void UpdateMovement(double dt)
       {
          Rectangle bounds = Game1.Player.GetBounds();
          Vector2 move = base.GetMoveVector();
+         int x, y, a = Game1.TILE_SIZE - 1;
+         Vector2 pos = Game1.Player.GetPos();
 
-         if (IsButtonDown(Buttons.A) && _jump == 0)
+         if (IsButtonDown(Buttons.A) && _jump == 0 && !Game1.Player.Falling)
+         {
+            Game1.Player.SetFalling(true);
             _jump = Data.Player.SCROLL_FRAMES;
+         }
 
          if (_jump != 0)
          {
@@ -127,6 +147,63 @@ namespace ld24.States
                move.Y = 1;
                _jump++;
             }
+         }
+                  
+         if (move.X != 0)
+         {
+            Vector2 test = pos;
+            test.X += move.X;
+
+            if (IsCollision(test) || 
+                IsCollision(test + new Vector2(a, 0)) ||
+                IsCollision(test + new Vector2(0, a)) ||
+                IsCollision(test + new Vector2(a, a))
+               )
+            {
+               move.X = 0;
+            }
+            //x = (int)((pos.X + move.X) / Game1.TILE_SIZE);
+            //y = (int)(pos.Y / Game1.TILE_SIZE);
+
+            //if (move.X > 0 && !_level.CanWalkAt(x + 1, y))
+            //   move.X = 0;
+            //else if (!_level.CanWalkAt(x, y))
+            //   move.X = 0;
+
+            //if (Game1.Player.Falling)
+            //{
+            //   if (move.X > 0 && !_level.CanWalkAt(x + 1, y + 1))
+            //      move.X = 0;
+            //   else if (!_level.CanWalkAt(x, y + 1))
+            //      move.X = 0;
+            //}
+         }
+
+         if (_jump == 0)
+         {
+            move.Y = 1;
+            Game1.Player.SetFalling(true);
+         }
+
+         if (move.Y > 0)
+         {
+            Vector2 test = pos;
+            test.Y += move.Y;
+
+            if (IsCollision(test + new Vector2(0, a)) || IsCollision(test + new Vector2(a, a)))
+            {
+               move.Y = 0;
+               Game1.Player.SetFalling(false);
+            }
+
+            //x = (int)(pos.X / Game1.TILE_SIZE);
+            //y = (int)((pos.Y + 1) / Game1.TILE_SIZE);
+
+            //if (!_level.CanWalkAt(x, y + 1) || !_level.CanWalkAt(x + 1, y + 1))
+            //{
+            //   move.Y = 0;
+            //   Game1.Player.SetFalling(false);
+            //}
          }
 
          Game1.Player.ApplyMovementVector(move);
@@ -190,13 +267,13 @@ namespace ld24.States
             case 1: tex = _blobWalk; break;
          };
 
-         _batch.Draw(tex, Game1.Player.GetPos() + new Vector2(0, 300), src, Color.White, 0f, Vector2.Zero, scale, eff, 0f);
+         _batch.Draw(tex, Game1.Player.GetPos(), src, Color.White, 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;
          foreach (Data.Particle p in _particleList)
          {
             scale = (float)p.Size / 32f;
-            _batch.Draw(_goo, p.GetPosition() + new Vector2(0, 300), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+            _batch.Draw(_goo, p.GetPosition(), src, Color.White * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
          }
       }
    }
