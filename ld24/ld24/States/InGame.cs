@@ -475,6 +475,9 @@ namespace ld24.States
                      case Data.Tile.FLAG_FROG:
                         decor = _frog;
                         break;
+                     case Data.Tile.FLAG_STALAGMITE:
+                        decor = _stalag;
+                        break;
                   };
 
                   if (decor != null)

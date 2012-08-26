@@ -148,6 +148,8 @@ namespace LevelEditor
                return 5;
             case ld24.Data.Tile.FLAG_FROG:
                return 6;
+            case ld24.Data.Tile.FLAG_STALAGMITE:
+               return 7;
          };
       }
 
@@ -245,6 +247,9 @@ namespace LevelEditor
                   break;
                case 10: // place frog
                   tile.Flags = ld24.Data.Tile.FLAG_FROG;
+                  break;
+               case 11: // place stalagmite
+                  tile.Flags = ld24.Data.Tile.FLAG_STALAGMITE;
                   break;
             };
 

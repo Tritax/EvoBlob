@@ -16,6 +16,7 @@ namespace ld24.Data
       public const byte FLAG_DROWN = 5;
       public const byte FLAG_SPIKEY = 6;
       public const byte FLAG_FROG = 7;
+      public const byte FLAG_STALAGMITE = 8;
 
       public byte Gfx { get; set; }
       public bool Passable { get; set; }
@@ -128,10 +129,12 @@ namespace ld24.Data
 
       private bool Compile()
       {
+         Powerup up = null;
          for (int y = 0; y < _height; y++)
          {
             for (int x = 0; x < _width; x++)
             {
+               up = null;
                switch (_tiles[x, y].Flags)
                {
                   default: break;
@@ -144,9 +147,16 @@ namespace ld24.Data
                      _badGuyList.Add(bad);
                      break;
                   case Tile.FLAG_FROG:
-                     Powerup up = new Powerup();
+                     up = new Powerup();
                      up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
                      up.SetType(Data.Powerup.FROG_EVOLVE);
+
+                     _powerupList.Add(up);
+                     break;
+                  case Tile.FLAG_STALAGMITE:
+                     up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.ROCK_EVOLVE);
 
                      _powerupList.Add(up);
                      break;
