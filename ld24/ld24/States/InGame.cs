@@ -303,9 +303,8 @@ namespace ld24.States
             {
                default: 
                case Data.Tile.FLAG_START_POS:
-                  break;
-
                case Data.Tile.FLAG_WIN_POS:
+                  // Nothing
                   break;
 
                case Data.Tile.FLAG_DEATH:
@@ -313,7 +312,8 @@ namespace ld24.States
                   break;
 
                case Data.Tile.FLAG_DROWN:
-                  death = true;
+                  if (_evolutionTier != Data.Powerup.FISH_EVOLVE)
+                     death = true;
                   break;
 
                case Data.Tile.FLAG_SPIKE:
