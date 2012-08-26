@@ -32,6 +32,8 @@ namespace ld24.Data
       private Tile[,] _tiles;
 
       private Vector2 _startPos = new Vector2(-1, -1);
+      private Vector2 _winPos = new Vector2(-1, -1);
+
       private List<Badguy> _badGuyList = new List<Badguy>();
       private List<Powerup> _powerupList = new List<Powerup>();
 
@@ -63,6 +65,7 @@ namespace ld24.Data
       public int GetWidth() { return _width; }
       public int GetHeight() { return _height; }
       public Vector2 GetStartPosition() { return _startPos; }
+      public Vector2 GetWinPos() { return _winPos; }
 
       public Tile GetAt(int x, int y)
       {
@@ -129,6 +132,8 @@ namespace ld24.Data
 
       private bool Compile()
       {
+         bool start = false, end = false;
+
          Powerup up = null;
          for (int y = 0; y < _height; y++)
          {
@@ -140,6 +145,16 @@ namespace ld24.Data
                   default: break;
                   case Tile.FLAG_START_POS:
                      _startPos = new Vector2(x, y);
+                     start = true;
+                     break;
+                  case Tile.FLAG_WIN_POS:
+                     up = new Powerup();
+                     up.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     up.SetType(Data.Powerup.WIN_EVOLVE);
+                     
+                     _winPos = new Vector2(x, y);
+                     _powerupList.Add(up);
+                     end = true;
                      break;
                   case Tile.FLAG_SPIKEY:
                      Badguy bad = new Badguy();
@@ -164,7 +179,7 @@ namespace ld24.Data
             }
          }
 
-         if (_startPos.X == -1 || _startPos.Y == -1)
+         if (!start || !end)
             return false;
 
          return true;

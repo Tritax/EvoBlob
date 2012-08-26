@@ -9,6 +9,8 @@ namespace ld24.States
 {
    class InGame : StateBase
    {
+      public const double WIN_SPAWN_TIME = 2.0;
+
       private SpriteBatch _batch;
 
       private Texture2D _blobIdle;
@@ -35,6 +37,8 @@ namespace ld24.States
       private double _eAccum;
       private int _eFrame;
 
+      private double _winSpawner = 0;
+
       private int _evolutionTier = 0;
       private int _jump = 0;
       private bool _attacking = false;
@@ -43,6 +47,7 @@ namespace ld24.States
       private List<Data.Projectile> _projList;
 
       private Data.Level _level;
+      private bool _winner = false;
 
       public InGame()
       {
@@ -82,7 +87,7 @@ namespace ld24.States
       {
       }
 
-      protected override GameStates OnUpdate(double dt)
+      private void UpdateTimers(double dt)
       {
          _accum += dt;
          if (_accum > .25)
@@ -97,7 +102,7 @@ namespace ld24.States
 
             if (Game1.Player.Moved && !Game1.Player.Falling)
             {
-               SpawnGoo(5, 4, 8, .75f);
+               SpawnGoo(Game1.Player.GetPos(), 5, 4, 8, .75f, DeterminePlayerColor());
             }
          }
 
@@ -109,6 +114,18 @@ namespace ld24.States
             if (_eFrame > 2)
                _eFrame = 0;
          }
+
+         _winSpawner += dt;
+         if (_winSpawner > WIN_SPAWN_TIME)
+         {
+            _winSpawner = 0;
+            SpawnGoo(_level.GetWinPos() * Game1.TILE_SIZE, 5, 6, 16, 2, Color.Yellow);
+         }
+      }
+
+      protected override GameStates OnUpdate(double dt)
+      {
+         UpdateTimers(dt);
 
          double age = 0;
          for (int i = _projList.Count - 1; i >= 0; i--)
@@ -148,6 +165,8 @@ namespace ld24.States
             {
                _evolutionTier = up.GetType();
                _level.RemovePowerup(up);
+               if (_evolutionTier == Data.Powerup.WIN_EVOLVE)
+                  _winner = true;
             }
          }
 
@@ -188,16 +207,14 @@ namespace ld24.States
 #if DEBUG
          if (IsButtonDown(Buttons.B))
          {
-            SpawnGoo(5, 6, 16, 2);
+            SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
          }
+#endif
 
          if (IsButtonDown(Buttons.Y))
          {
-            _evolutionTier++;
-            if (_evolutionTier > Data.Powerup.MAX_EVOLVE)
-               _evolutionTier = 0;
+            // TODO : suicide
          }
-#endif
 
          for (int i = _particleList.Count - 1; i >= 0; i--)
          {
@@ -212,7 +229,7 @@ namespace ld24.States
       private void Die()
       {
          _offset = Vector2.Zero;
-         SpawnGoo(5, 6, 16, 2);
+         SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
          Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
       }
 
@@ -229,6 +246,9 @@ namespace ld24.States
 
       private void UpdateControls(double dt)
       {
+         if (_winner)
+            return;
+
          bool attackBtn = IsButtonDown(Buttons.X) || IsKeyPressed(Keys.X);
          if (attackBtn)
          {
@@ -257,6 +277,9 @@ namespace ld24.States
       {
          Rectangle bounds = Game1.Player.GetBounds();
          Vector2 move = base.GetMoveVector();
+         if (_winner)
+            move.X = 0;
+
          int x, y, a = Game1.TILE_SIZE - 1;
          Vector2 pos = Game1.Player.GetPos();
 
@@ -392,15 +415,14 @@ namespace ld24.States
          }
       }
 
-      private void SpawnGoo(int num, int minSize, int maxSize, float maxAge)
+      private void SpawnGoo(Vector2 pos, int num, int minSize, int maxSize, float maxAge, Color clr)
       {
-         Vector2 pos = Game1.Player.GetPos();
          float ang;
          Random rnd = new Random();
          for (int i = 0; i < num; i++)
          {
             ang = (float)(rnd.NextDouble() * Math.PI);
-            Data.Particle p = new Data.Particle(rnd.NextDouble() * maxAge, minSize + rnd.Next(maxSize));
+            Data.Particle p = new Data.Particle(rnd.NextDouble() * maxAge, minSize + rnd.Next(maxSize), clr);
             p.SetPosition((int)pos.X + 16, (int)pos.Y + 16);
             p.SetDirection((int)(Math.Cos(ang) * 2), (int)(-Math.Sin(ang) * 2));
             _particleList.Add(p);
@@ -466,9 +488,15 @@ namespace ld24.States
                   _batch.Draw(_tileSet, _offset + pos, src, Color.White);
 
                   Texture2D decor = null;
+                  Color clr = Color.White;
+
                   switch (tile.Flags)
                   {
                      default: break;
+                     case Data.Tile.FLAG_WIN_POS:
+                        decor = _stalag;
+                        clr = Color.Yellow;
+                        break;
                      case Data.Tile.FLAG_SPIKEY:
                         decor = _spikey;
                         break;
@@ -485,11 +513,28 @@ namespace ld24.States
                      src.X = (_eFrame * Game1.TILE_SIZE);
                      src.Y = 0;
 
-                     _batch.Draw(decor, _offset + pos, src, Color.White);
+                     _batch.Draw(decor, _offset + pos, src, clr);
                   }
                }
             }
          }
+      }
+
+      private Color DeterminePlayerColor()
+      {
+         Color clr = Color.Blue;
+         switch (_evolutionTier)
+         {
+            default: break;
+            case Data.Powerup.FROG_EVOLVE:
+               clr = Color.Green; break;
+            case Data.Powerup.ROCK_EVOLVE:
+               clr = Color.Gray; break;
+            case Data.Powerup.WIN_EVOLVE:
+               clr = Color.Yellow; break;
+         };
+
+         return clr;
       }
 
       private void DrawPlayer()
@@ -515,24 +560,14 @@ namespace ld24.States
             case 1: tex = _blobWalk; break;
          };
 
-         Color clr = Color.Blue;
-         switch (_evolutionTier)
-         {
-            default: break;
-            case Data.Powerup.FROG_EVOLVE:
-               clr = Color.Green; break;
-            case Data.Powerup.ROCK_EVOLVE:
-               clr = Color.Gray; break;
-         };
-
          src.X = (_frame * Game1.TILE_SIZE);
-         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, clr, 0f, Vector2.Zero, scale, eff, 0f);
+         _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, DeterminePlayerColor(), 0f, Vector2.Zero, scale, eff, 0f);
 
          src.X = 0;
          foreach (Data.Particle p in _particleList)
          {
             scale = (float)p.Size / 32f;
-            _batch.Draw(_goo, p.GetPosition() + _offset, src, clr * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
+            _batch.Draw(_goo, p.GetPosition() + _offset, src, p.GetColor() * p.GetFade(), 0f, new Vector2(16, 16), scale, SpriteEffects.None, 0f);
          }
       }
    }

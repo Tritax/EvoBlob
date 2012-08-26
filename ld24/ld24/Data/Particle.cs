@@ -15,16 +15,18 @@ namespace ld24.Data
 
       private Vector2 _pos;
       private Vector2 _dir;
+      private Color _clr;
 
       private double _gravAccum;
 
-      public Particle(double max, int size)
+      public Particle(double max, int size, Color clr)
       {
          _age = 0;
          _fadeAt = max * 0.75;
          _max = max;
          _type = 0;
          _size = size;
+         _clr = clr;
       }
 
       public Vector2 GetPosition()
@@ -38,6 +40,11 @@ namespace ld24.Data
             return 1f;
 
          return 1f - (float)((_age - _fadeAt) / (_max - _fadeAt));
+      }
+
+      public Color GetColor()
+      {
+         return _clr;
       }
 
       public void SetDirection(int x, int y)
