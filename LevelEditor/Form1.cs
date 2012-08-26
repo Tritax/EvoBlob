@@ -149,6 +149,12 @@ namespace LevelEditor
                return 6;
             case ld24.Data.Tile.FLAG_STALAGMITE:
                return 7;
+            case ld24.Data.Tile.FLAG_FISH:
+               return 8;
+            case ld24.Data.Tile.FLAG_SPIDER:
+               return 9;
+            case ld24.Data.Tile.FLAG_BAT:
+               return 10;
          };
       }
 
@@ -250,6 +256,15 @@ namespace LevelEditor
                   break;
                case 11: // place stalagmite
                   tile.Flags = ld24.Data.Tile.FLAG_STALAGMITE;
+                  break;
+               case 12: // place fish
+                  tile.Flags = ld24.Data.Tile.FLAG_FISH;
+                  break;
+               case 13: // place spider
+                  tile.Flags = ld24.Data.Tile.FLAG_SPIDER;
+                  break;
+               case 14: // place bat
+                  tile.Flags = ld24.Data.Tile.FLAG_BAT;
                   break;
             };
 

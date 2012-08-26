@@ -23,6 +23,7 @@ namespace ld24.States
       private Texture2D _blobEat;
       private Texture2D _blobWalk;
       private Texture2D _blobJump;
+      private Texture2D _blobSpit;
       private Texture2D _sky;
       private Texture2D _tileSet;
       private Texture2D _goo;
@@ -84,6 +85,7 @@ namespace ld24.States
          _blobEat = g.Content.Load<Texture2D>("bwblob_eat");
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
+         _blobSpit = g.Content.Load<Texture2D>("bwblob_spit");
          _goo = g.Content.Load<Texture2D>("bwgoo");
          _frog = g.Content.Load<Texture2D>("frog");
          _spikey = g.Content.Load<Texture2D>("spikey");
@@ -669,7 +671,7 @@ namespace ld24.States
                   tex = _blobRoll;
                
                if (_attacking)
-                  tex = _blobEat;
+                  tex = _evolutionTier == Data.Powerup.ROCK_EVOLVE ? _blobSpit : _blobEat;
                
                break;
             case 1: tex = _blobWalk; break;

@@ -17,6 +17,9 @@ namespace ld24.Data
       public const byte FLAG_SPIKEY = 6;
       public const byte FLAG_FROG = 7;
       public const byte FLAG_STALAGMITE = 8;
+      public const byte FLAG_FISH = 9;
+      public const byte FLAG_SPIDER = 10;
+      public const byte FLAG_BAT = 11;
 
       public byte Gfx { get; set; }
       public bool Passable { get; set; }
