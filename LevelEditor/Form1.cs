@@ -144,6 +144,10 @@ namespace LevelEditor
                return 2;
             case ld24.Data.Tile.FLAG_WIN_POS:
                return 1;
+            case ld24.Data.Tile.FLAG_SPIKEY:
+               return 5;
+            case ld24.Data.Tile.FLAG_FROG:
+               return 6;
          };
       }
 
@@ -235,6 +239,12 @@ namespace LevelEditor
                   break;
                case 8:  // clear flags
                   tile.Flags = 0;
+                  break;
+               case 9:  // place spikey
+                  tile.Flags = ld24.Data.Tile.FLAG_SPIKEY;
+                  break;
+               case 10: // place frog
+                  tile.Flags = ld24.Data.Tile.FLAG_FROG;
                   break;
             };
 

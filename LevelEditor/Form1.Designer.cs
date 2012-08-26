@@ -192,7 +192,9 @@
             "Place Start Flag",
             "Set Spike Flag",
             "Set Drown Flag",
-            "Clear Flag"});
+            "Clear Flag",
+            "Place Spikey",
+            "Place Frog"});
          this.modeOptions.Location = new System.Drawing.Point(71, 291);
          this.modeOptions.Name = "modeOptions";
          this.modeOptions.Size = new System.Drawing.Size(188, 21);

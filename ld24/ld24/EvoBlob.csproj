@@ -107,9 +107,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Badguy.cs" />
     <Compile Include="Data\Level.cs" />
     <Compile Include="Data\Particle.cs" />
     <Compile Include="Data\Player.cs" />
+    <Compile Include="Data\Powerup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

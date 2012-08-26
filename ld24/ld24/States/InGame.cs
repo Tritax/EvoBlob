@@ -20,6 +20,8 @@ namespace ld24.States
       private Texture2D _sky;
       private Texture2D _tileSet;
       private Texture2D _goo;
+      private Texture2D _frog;
+      private Texture2D _spikey;
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
@@ -29,8 +31,12 @@ namespace ld24.States
       private double _accum;
       private int _frame;
 
+      private double _eAccum;
+      private int _eFrame;
+
       private int _evolutionTier = 0;
       private int _jump = 0;
+      private bool _attacking = false;
 
       private List<Data.Particle> _particleList;
 
@@ -55,6 +61,8 @@ namespace ld24.States
          _blobWalk = g.Content.Load<Texture2D>("blob_walk");
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("bwgoo");
+         _frog = g.Content.Load<Texture2D>("frog");
+         _spikey = g.Content.Load<Texture2D>("spikey");
 
          string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\vertical_test.level");
          _level = Data.Level.FromFile(filePath);
@@ -76,12 +84,24 @@ namespace ld24.States
             _accum = 0;
             _frame++;
             if (_frame > 2)
+            {
                _frame = 0;
+               _attacking = false;
+            }
 
-            if (Game1.Player.Moved)
+            if (Game1.Player.Moved && !Game1.Player.Falling)
             {
                SpawnGoo(5, 4, 8, .75f);
             }
+         }
+
+         _eAccum += dt;
+         if (_eAccum > .25)
+         {
+            _eAccum = 0;
+            _eFrame++;
+            if (_eFrame > 2)
+               _eFrame = 0;
          }
 
          UpdateMovement(dt);
@@ -91,6 +111,13 @@ namespace ld24.States
             if (Math.Abs(_skyBox.X) >= _skyBox.Width)
                _skyBox.X = 0;
          }
+
+         if (_level.CheckEnemyCollide())
+         {
+            Die();
+         }
+
+         UpdateControls(dt);
 
          Point pt = Game1.Player.GetTilePos();
          if (_level.GetAt(pt.X, pt.Y).Flags > 0)
@@ -120,9 +147,7 @@ namespace ld24.States
 
             if (death)
             {
-               _offset = Vector2.Zero;
-               SpawnGoo(5, 6, 16, 2);
-               Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
+               Die();
             }
          }
 
@@ -150,6 +175,13 @@ namespace ld24.States
          return GameStates.InGame;
       }
 
+      private void Die()
+      {
+         _offset = Vector2.Zero;
+         SpawnGoo(5, 6, 16, 2);
+         Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
+      }
+
       private bool IsCollision(int x, int y)
       {
          int tx = (int)(x / Game1.TILE_SIZE);
@@ -159,6 +191,17 @@ namespace ld24.States
             return true;
 
          return false;
+      }
+
+      private void UpdateControls(double dt)
+      {
+         bool attackBtn = IsButtonDown(Buttons.X) || IsKeyPressed(Keys.X);
+         if (attackBtn)
+         {
+            _attacking = true;
+            _frame = 0;
+            _accum = 0;
+         }
       }
       
       private void UpdateMovement(double dt)
@@ -329,7 +372,44 @@ namespace ld24.States
 
       private void DrawLevel()
       {
-         _level.Draw(_batch, _offset, _tileSet);
+         Vector2 pos = Vector2.Zero;
+         Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);
+         Data.Tile tile;
+
+         for (int y = 0; y < _level.GetHeight(); y++)
+         {
+            pos.Y = y * Game1.TILE_SIZE;
+            for (int x = 0; x < _level.GetWidth(); x++)
+            {
+               tile = _level.GetAt(x, y);
+               if (tile != null)
+               {
+                  pos.X = x * Game1.TILE_SIZE;
+
+                  src.X = (tile.Gfx % 8) * Game1.TILE_SIZE;
+                  src.Y = (tile.Gfx / 8) * Game1.TILE_SIZE;
+
+                  _batch.Draw(_tileSet, _offset + pos, src, Color.White);
+
+                  Texture2D decor = null;
+                  switch (tile.Flags)
+                  {
+                     default: break;
+                     case Data.Tile.FLAG_SPIKEY:
+                        decor = _spikey;
+                        break;
+                  };
+
+                  if (decor != null)
+                  {
+                     src.X = (_eFrame * Game1.TILE_SIZE);
+                     src.Y = 0;
+
+                     _batch.Draw(decor, _offset + pos, src, Color.White);
+                  }
+               }
+            }
+         }
       }
 
       private void DrawPlayer()
@@ -345,9 +425,10 @@ namespace ld24.States
          Texture2D tex;
          switch (_evolutionTier)
          {
-            default: tex = _blobRoll; break;
+            default: tex = _attacking ? _blobEat : _blobRoll; break;
             case 1: tex = _blobWalk; break;
          };
+
 
          _batch.Draw(tex, Game1.Player.GetPos() + _offset, src, Color.Green, 0f, Vector2.Zero, scale, eff, 0f);
 

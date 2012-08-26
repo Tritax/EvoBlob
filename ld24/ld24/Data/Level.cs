@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.Xna.Framework;
@@ -13,6 +14,8 @@ namespace ld24.Data
       public const byte FLAG_WIN_POS = 3;
       public const byte FLAG_SPIKE = 4;
       public const byte FLAG_DROWN = 5;
+      public const byte FLAG_SPIKEY = 6;
+      public const byte FLAG_FROG = 7;
 
       public byte Gfx { get; set; }
       public bool Passable { get; set; }
@@ -28,6 +31,7 @@ namespace ld24.Data
       private Tile[,] _tiles;
 
       private Vector2 _startPos = new Vector2(-1, -1);
+      private List<Badguy> _badGuyList = new List<Badguy>();
 
       protected Level()
       {
@@ -74,14 +78,35 @@ namespace ld24.Data
          return _tiles[x, y].Passable;
       }
 
+      public bool CheckEnemyCollide()
+      {
+         foreach (Badguy bad in _badGuyList)
+         {
+            if (bad.GetBounds().Intersects(Game1.Player.GetBounds()))
+               return true;
+         }
+
+         return false;
+      }
+
       private bool Compile()
       {
          for (int y = 0; y < _height; y++)
          {
             for (int x = 0; x < _width; x++)
             {
-               if (_tiles[x, y].Flags == Tile.FLAG_START_POS)
-                  _startPos = new Vector2(x, y);
+               switch (_tiles[x, y].Flags)
+               {
+                  default: break;
+                  case Tile.FLAG_START_POS:
+                     _startPos = new Vector2(x, y);
+                     break;
+                  case Tile.FLAG_SPIKEY:
+                     Badguy bad = new Badguy();
+                     bad.SetPosition(x * Game1.TILE_SIZE, y * Game1.TILE_SIZE);
+                     _badGuyList.Add(bad);
+                     break;
+               };
             }
          }
 
@@ -89,26 +114,6 @@ namespace ld24.Data
             return false;
 
          return true;
-      }
-
-      public void Draw(SpriteBatch sb, Vector2 offset, Texture2D tileset)
-      {
-         Vector2 pos = Vector2.Zero;
-         Rectangle src = new Rectangle(0, 0, Game1.TILE_SIZE, Game1.TILE_SIZE);
-
-         for (int y = 0; y < _height; y++)
-         {
-            pos.Y = y * Game1.TILE_SIZE;
-            for (int x = 0; x < _width; x++)
-            {
-               pos.X = x * Game1.TILE_SIZE;
-
-               src.X = (_tiles[x, y].Gfx % 8) * Game1.TILE_SIZE;
-               src.Y = (_tiles[x, y].Gfx / 8) * Game1.TILE_SIZE;
-
-               sb.Draw(tileset, offset + pos, src, Color.White);
-            }
-         }
       }
 
       public void Save(string filePath)
