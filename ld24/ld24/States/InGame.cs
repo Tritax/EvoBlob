@@ -22,6 +22,7 @@ namespace ld24.States
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
+      private int _halfHeight = 0;
       private Vector2 _offset;
 
       private double _accum;
@@ -44,6 +45,7 @@ namespace ld24.States
          _batch = new SpriteBatch(g.GraphicsDevice);
          _skyBox = new Rectangle(0, 0, g.GraphicsDevice.Viewport.Width, g.GraphicsDevice.Viewport.Height);
          _halfWidth = g.GraphicsDevice.Viewport.Width / 2;
+         _halfHeight = g.GraphicsDevice.Viewport.Height / 2;
 
          _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
@@ -52,7 +54,7 @@ namespace ld24.States
          _blobJump = g.Content.Load<Texture2D>("blob_jump");
          _goo = g.Content.Load<Texture2D>("bwgoo");
 
-         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\example3.level");
+         string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\vertical_test.level");
          _level = Data.Level.FromFile(filePath);
          if (_level != null)
          {
@@ -183,7 +185,7 @@ namespace ld24.States
                _jump++;
             }
          }
-                  
+
          if (move.X != 0)
          {
             Rectangle r = bounds;
@@ -217,32 +219,66 @@ namespace ld24.States
          }
 
          Game1.Player.ApplyMovementVector(move);
-         if (Game1.Player.GetPos().X > _halfWidth)
+         CheckForScrolling((int)(move.X * Data.Player.MAX_WALK_SPEED), (int)(move.Y * Data.Player.MAX_WALK_SPEED));
+      }
+
+      private void CheckForScrolling(int dx, int dy)
+      {
+         Vector2 playerPos = Game1.Player.GetPos();
+         if (playerPos.X > _halfWidth)
          {
             int lvlw = _level.GetWidth() * Game1.TILE_SIZE;
-            int rem = lvlw - (int)Game1.Player.GetPos().X; 
+            int rem = lvlw - (int)playerPos.X;
 
-            int n = (int)(move.X * Data.Player.MAX_WALK_SPEED);
-            if (n > 0)
+            if (dx > 0)
             {
                // moving right // check offset against remaining level width
-               if (_offset.X + n < rem)
+               if (_offset.X + dx < rem)
                {
-                  _offset.X -= n;
+                  _offset.X -= dx;
                   if (_halfWidth + rem < _skyBox.Width)
-                     _offset.X += n;
+                     _offset.X += dx;
                }
             }
-            else if (n < 0)
+            else if (dx < 0)
             {
                // moving left // check offset against 0
                if (_offset.X < 0)
                {
-                  _offset.X -= n;
+                  _offset.X -= dx;
                   if (_halfWidth + rem < _skyBox.Width)
-                     _offset.X += n;
+                     _offset.X += dx;
                   if (_offset.X > 0)
                      _offset.X = 0;
+               }
+            }
+         }
+
+         if (playerPos.Y > _halfHeight)
+         {
+            int lvlh = _level.GetHeight() * Game1.TILE_SIZE;
+            int rem = lvlh - (int)playerPos.Y;
+
+            if (dy > 0)
+            {
+               // moving down // check offset against remaining level height
+               if (_offset.Y + dy < rem)
+               {
+                  _offset.Y -= dy;
+                  if (_halfHeight + rem < _skyBox.Height)
+                     _offset.Y += dy;
+               }
+            }
+            else if (dy < 0)
+            {
+               // moving up // check offset against 0
+               if (_offset.Y < 0)
+               {
+                  _offset.Y -= dx;
+                  if (_halfHeight + rem < _skyBox.Height)
+                     _offset.Y += dx;
+                  if (_offset.Y > 0)
+                     _offset.Y = 0;
                }
             }
          }
