@@ -147,6 +147,7 @@ namespace ld24.States
          _eAccum = 0;
          _eFrame = 0;
          _winSpawner = 0;
+         _winTimer = 0;
          _evolutionTier = 0;
          _suicideTimer = 0;
          _jump = 0; 
@@ -240,7 +241,8 @@ namespace ld24.States
             if (_winTimer > WIN_LAPSE)
             {
                _currentLevel++;
-               LoadLevel();
+               if (_currentLevel < _levelList.Count)
+                  LoadLevel();
             }
          }
       }
