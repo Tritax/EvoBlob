@@ -5,10 +5,10 @@ namespace ld24.Data
 {
    class Player
    {
-      public const int BOUNDS_X = 2;
-      public const int BOUNDS_Y = 6;
-      public const int BOUNDS_W = 30;
-      public const int BOUNDS_H = 26;
+      public const int BOUNDS_X = 4;
+      public const int BOUNDS_Y = 8;
+      public const int BOUNDS_W = 28;
+      public const int BOUNDS_H = 24;
 
       public const int MAX_WALK_SPEED = 3;
       public const int SCROLL_FRAMES = 16;
