@@ -286,7 +286,7 @@ namespace ld24.States
 
          UpdateTimers(dt);
          if (_currentLevel >= _levelList.Count && _winTimer > WIN_LAPSE)
-            return GameStates.Quit;
+            return GameStates.Win;
 
          UpdateProjectiles(dt);
          UpdateMovement(dt);

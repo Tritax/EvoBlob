@@ -121,6 +121,9 @@ namespace ld24
             case States.GameStates.About:
                _gameState = new States.AboutState();
                break;
+            case States.GameStates.Win:
+               _gameState = new States.WinState();
+               break;
          };
 
          _state = newState;

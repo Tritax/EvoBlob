@@ -12,7 +12,8 @@ namespace ld24.States
       Instruct,
       About,
       InGame,
-      Quit
+      Quit,
+      Win
    }
 
    abstract class StateBase

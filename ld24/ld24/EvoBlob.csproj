@@ -121,6 +121,7 @@
     <Compile Include="States\InstructState.cs" />
     <Compile Include="States\MenuState.cs" />
     <Compile Include="States\StateBase.cs" />
+    <Compile Include="States\WinState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="dat\tilesets\grassy_tileset.png">
