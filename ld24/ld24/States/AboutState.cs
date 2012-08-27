@@ -28,7 +28,7 @@ namespace ld24.States
          _credits.Add("Team Bunnell is: Tritax (Dad), KBear (Mom), CDBeaners (Teen), Jimmy (Toddler)");
          _credits.Add("");
          _credits.Add("Game Design: Jimmy, KBear, CDBeaners");
-         _credits.Add("Graphics: CDBeaners");
+         _credits.Add("Graphics: CDBeaners, Tritax");
          _credits.Add("Level Design: KBear, CDBeaners");
          _credits.Add("Code: Tritax");
          _credits.Add("");

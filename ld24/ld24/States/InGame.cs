@@ -249,6 +249,9 @@ namespace ld24.States
 
       protected override GameStates OnUpdate(double dt)
       {
+         if (IsButtonPress(Buttons.Back) || IsKeyPressed(Keys.Escape))
+            return GameStates.Menu;
+
          UpdateTimers(dt);
          if (_currentLevel >= _levelList.Count && _winTimer > WIN_LAPSE)
             return GameStates.Quit;
@@ -495,10 +498,21 @@ namespace ld24.States
             }
          }
 
-         if (_jump == 0 && !_attached)
+         if (_jump == 0)
          {
-            move.Y = _evolutionTier == Data.Powerup.BAT_EVOLVE ? 0.5f : 1f;
-            Game1.Player.SetFalling(true);
+            if (_attached)
+            {
+               Rectangle r = bounds;
+               r.Offset(0, (int)(-1 * Data.Player.MAX_WALK_SPEED));
+
+               _attached = IsClimbable(r.Left, r.Top) || IsClimbable(r.Right, r.Top);
+            }
+
+            if (!_attached)
+            {
+               move.Y = _evolutionTier == Data.Powerup.BAT_EVOLVE ? 0.5f : 1f;
+               Game1.Player.SetFalling(true);
+            }
          }
 
          if (move.Y != 0)
