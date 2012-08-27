@@ -10,6 +10,7 @@ namespace ld24.States
    {
       Menu,
       Instruct,
+      About,
       InGame,
       Quit
    }

@@ -76,10 +76,6 @@ namespace ld24
       /// <param name="gameTime">Provides a snapshot of timing values.</param>
       protected override void Update(GameTime gameTime)
       {
-         // Allows the game to exit
-         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            this.Exit();
-
          double dt = gameTime.ElapsedGameTime.TotalSeconds;
          States.GameStates next = _gameState.Update(dt);
          if (next != _state)
@@ -121,6 +117,9 @@ namespace ld24
                break;
             case States.GameStates.InGame:
                _gameState = new States.InGame();
+               break;
+            case States.GameStates.About:
+               _gameState = new States.AboutState();
                break;
          };
 

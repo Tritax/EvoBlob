@@ -14,6 +14,7 @@ namespace ld24.States
       private bool _canNav = true;
 
       private int _selected = 0;
+      private const int MAX_SELECT = 3;
 
       public override void Init(Game1 g)
       {
@@ -34,7 +35,7 @@ namespace ld24.States
             { 
                default:
                case 2:
-                  return GameStates.Quit;
+                  return GameStates.About;
                case 0:
                   return GameStates.InGame;
                case 1:
@@ -58,8 +59,8 @@ namespace ld24.States
             else if (nav.Y < 0)
             {
                _selected++;
-               if (_selected > 2)
-                  _selected = 2;
+               if (_selected > MAX_SELECT)
+                  _selected = MAX_SELECT;
 
                _canNav = false;
             }
