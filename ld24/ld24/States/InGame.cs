@@ -274,6 +274,7 @@ namespace ld24.States
             Data.Powerup up = _level.CheckPowerupCollide();
             if (up != null && _attacking)
             {
+               _attached = false;
                _evolutionTier = up.GetType();
                _level.RemovePowerup(up);
                if (_evolutionTier == Data.Powerup.WIN_EVOLVE)
