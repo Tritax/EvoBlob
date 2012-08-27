@@ -139,10 +139,61 @@ namespace ld24.States
          string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\tilesets");
          foreach (string str in Directory.GetFiles(path, "*.png"))
          {
-            Texture2D tex = Texture2D.FromStream(dev, new FileStream(str, FileMode.Open));
+            Texture2D tex = LoadTextureStream(dev, str);
             if (tex.Width == 256 && tex.Height == 256)
                _tilesetMap.Add(Path.GetFileNameWithoutExtension(str), tex);
          }
+      }
+
+      private Texture2D LoadTextureStream(GraphicsDevice dev, string str)
+      {
+         Texture2D file = null;
+         RenderTarget2D result = null;
+
+         using (FileStream titleStream = new FileStream(str, FileMode.Open))
+         {
+            file = Texture2D.FromStream(dev, titleStream);
+         }
+
+         //Setup a render target to hold our final texture which will have premulitplied alpha values
+         result = new RenderTarget2D(dev, file.Width, file.Height);
+
+         dev.SetRenderTarget(result);
+         dev.Clear(Color.Black);
+
+         //Multiply each color by the source alpha, and write in just the color values into the final texture
+         BlendState blendColor = new BlendState();
+         blendColor.ColorWriteChannels = ColorWriteChannels.Red | ColorWriteChannels.Green | ColorWriteChannels.Blue;
+
+         blendColor.AlphaDestinationBlend = Blend.Zero;
+         blendColor.ColorDestinationBlend = Blend.Zero;
+
+         blendColor.AlphaSourceBlend = Blend.SourceAlpha;
+         blendColor.ColorSourceBlend = Blend.SourceAlpha;
+
+         SpriteBatch spriteBatch = new SpriteBatch(dev);
+         spriteBatch.Begin(SpriteSortMode.Immediate, blendColor);
+         spriteBatch.Draw(file, file.Bounds, Color.White);
+         spriteBatch.End();
+
+         //Now copy over the alpha values from the PNG source texture to the final one, without multiplying them
+         BlendState blendAlpha = new BlendState();
+         blendAlpha.ColorWriteChannels = ColorWriteChannels.Alpha;
+
+         blendAlpha.AlphaDestinationBlend = Blend.Zero;
+         blendAlpha.ColorDestinationBlend = Blend.Zero;
+
+         blendAlpha.AlphaSourceBlend = Blend.One;
+         blendAlpha.ColorSourceBlend = Blend.One;
+
+         spriteBatch.Begin(SpriteSortMode.Immediate, blendAlpha);
+         spriteBatch.Draw(file, file.Bounds, Color.White);
+         spriteBatch.End();
+
+         //Release the GPU back to drawing to the screen
+         dev.SetRenderTarget(null);
+
+         return result as Texture2D;
       }
 
       private void ReadLevelList()
@@ -199,6 +250,10 @@ namespace ld24.States
 
             Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
             CalculateOffsetForLevelStart();
+         }
+         else
+         {
+            Console.WriteLine("Couldn't load level!!!");
          }
       }
 

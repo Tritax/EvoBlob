@@ -181,6 +181,7 @@ namespace LevelEditor
             if (int.TryParse(dlg.Width, out w) && int.TryParse(dlg.Height, out h))
             {
                _level = new ld24.Data.Level(w, h);
+               _level.SetTileset(_selectedTileset);
                _buffer = new Bitmap(w * TILE_SIZE, h * TILE_SIZE);
 
                vScrollBar.Minimum = 0;
