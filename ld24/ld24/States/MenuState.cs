@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ld24.States
 {
@@ -11,8 +12,10 @@ namespace ld24.States
       private SpriteBatch _batch;
       private SpriteFont _miramonte;
       private Texture2D _titleTex;
-      private bool _canNav = true;
+      private SoundEffect _navSound;
+      private SoundEffect _goSound;
 
+      private bool _canNav = true;
       private int _selected = 0;
       private const int MAX_SELECT = 3;
 
@@ -21,6 +24,8 @@ namespace ld24.States
          _batch = new SpriteBatch(g.GraphicsDevice);
          _miramonte = g.Content.Load<SpriteFont>("Miramonte");
          _titleTex = g.Content.Load<Texture2D>("evoblob_title");
+         _navSound = g.Content.Load<SoundEffect>("select");
+         _goSound = g.Content.Load<SoundEffect>("go");
       }
 
       public override void Uninit()
@@ -31,6 +36,8 @@ namespace ld24.States
       {
          if (IsButtonDown(Buttons.A) || IsKeyPressed(Keys.Enter))
          {
+            _goSound.Play();
+
             switch (_selected)
             { 
                default:
@@ -50,6 +57,8 @@ namespace ld24.States
          {
             if (nav.Y > 0)
             {
+               _navSound.Play();
+
                _selected--;
                if (_selected < 0)
                   _selected = 0;
@@ -58,6 +67,8 @@ namespace ld24.States
             }
             else if (nav.Y < 0)
             {
+               _navSound.Play();
+
                _selected++;
                if (_selected > MAX_SELECT)
                   _selected = MAX_SELECT;

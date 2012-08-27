@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ld24.States
 {
@@ -42,6 +43,10 @@ namespace ld24.States
       private Texture2D _fish;
       private Texture2D _spider;
       private Texture2D _bat;
+
+      private SoundEffect _jumpSound;
+      private SoundEffect _hitSound;
+      private SoundEffect _powSound;
 
       private Rectangle _skyBox;
       private int _halfWidth = 0;
@@ -115,6 +120,10 @@ namespace ld24.States
          _spider = g.Content.Load<Texture2D>("spider");
          _bat = g.Content.Load<Texture2D>("bat");
 
+         _jumpSound = g.Content.Load<SoundEffect>("test");
+         _hitSound = g.Content.Load<SoundEffect>("hit");
+         _powSound = g.Content.Load<SoundEffect>("powerup");
+
          ReadLevelList(); 
          LoadLevel();
       }
@@ -183,7 +192,7 @@ namespace ld24.States
          if (_level != null)
          {
             string str = _level.GetTileset();
-            if (_tilesetMap.ContainsKey(str))
+            if (!String.IsNullOrEmpty(str) && _tilesetMap.ContainsKey(str))
                _tileSet = _tilesetMap[str];
             else
                _tileSet = _defaultTiles;
@@ -298,6 +307,7 @@ namespace ld24.States
             if (up != null && _attacking)
             {
                _attached = false;
+               _powSound.Play();
                _evolutionTier = up.GetType();
                _level.RemovePowerup(up);
                if (_evolutionTier == Data.Powerup.WIN_EVOLVE)
@@ -408,6 +418,8 @@ namespace ld24.States
 
       private void Die()
       {
+         _hitSound.Play();
+
          LoadLevel();
          CalculateOffsetForLevelStart();
          SpawnGoo(Game1.Player.GetPos(), 5, 6, 16, 2, DeterminePlayerColor());
@@ -419,7 +431,11 @@ namespace ld24.States
          int tx = (int)(x / Game1.TILE_SIZE);
          int ty = (int)(y / Game1.TILE_SIZE);
 
-         if (!_level.CanWalkAt(tx, ty))
+         Data.Tile tile = _level.GetAt(tx, ty);
+         if (tile == null)
+            return true;
+
+         if (!tile.Passable)
             return true;
 
          return false;
@@ -430,7 +446,26 @@ namespace ld24.States
          int tx = (int)(x / Game1.TILE_SIZE);
          int ty = (int)(y / Game1.TILE_SIZE);
 
-         if (_level.GetAt(tx, ty).Flags == Data.Tile.FLAG_CLIMBABLE)
+         Data.Tile tile = _level.GetAt(tx, ty);
+         if (tile == null)
+            return false;
+
+         if (tile.Flags == Data.Tile.FLAG_CLIMBABLE)
+            return true;
+
+         return false;
+      }
+
+      public bool IsWater(int x, int y)
+      {
+         int tx = (int)(x / Game1.TILE_SIZE);
+         int ty = (int)(y / Game1.TILE_SIZE);
+
+         Data.Tile tile = _level.GetAt(tx, ty);
+         if (tile == null)
+            return false;
+
+         if (tile.Flags == Data.Tile.FLAG_DROWN)
             return true;
 
          return false;
@@ -481,8 +516,9 @@ namespace ld24.States
             _attached = false;
             _jump = -Data.Player.SCROLL_FRAMES;
          }
-         else if (jumpBtn && _jump == 0 && !Game1.Player.Falling)
+         else if (jumpBtn && ((_jump == 0 && !Game1.Player.Falling) || (_evolutionTier == Data.Powerup.FISH_EVOLVE && IsWater(bounds.Left, bounds.Top))))
          {
+            _jumpSound.Play();
             Game1.Player.SetFalling(true);
             _jump = Data.Player.SCROLL_FRAMES;
          }
@@ -550,7 +586,7 @@ namespace ld24.States
                if (IsClimbable(r.Left, r.Top) || IsClimbable(r.Right, r.Top))
                {
                   _jump = 0;
-                  _attached = true;
+                  _attached = _evolutionTier == Data.Powerup.SPIDER_EVOLVE;
                }
                else
                {
