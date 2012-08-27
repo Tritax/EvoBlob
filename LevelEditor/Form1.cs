@@ -184,10 +184,10 @@ namespace LevelEditor
                _buffer = new Bitmap(w * TILE_SIZE, h * TILE_SIZE);
 
                vScrollBar.Minimum = 0;
-               vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE);// -levelView.Height;
+               vScrollBar.Maximum = (_level.GetHeight() * TILE_SIZE) -levelView.Height + 64;
 
                hScrollBar.Minimum = 0;
-               hScrollBar.Maximum = (_level.GetWidth() * TILE_SIZE);// -levelView.Width;
+               hScrollBar.Maximum = (_level.GetWidth() * TILE_SIZE) -levelView.Width;
 
                DrawLevelPreview();
             }

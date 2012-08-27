@@ -174,7 +174,6 @@
     <None Include="dat\level.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="dat\lvl4.level" />
     <None Include="dat\vertical_test.level">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
