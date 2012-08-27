@@ -1,0 +1,51 @@
+[width]15
+[height]15
+[data]
+[tiles]
+       Y,      
+      ,,,      
+               
+               
+               
+               
+               
+  Y    Y       
+  ,HHHH,     Y 
+  ,IIII,     ,,
+  ,IIII,    Y  
+  ,IIII,HHHH,  
+  ,IIII,IIII,  
+KK,IIIIIIIII,  
+,,,,,,,,,,,,,KK
+[obstruct]
+        #      
+      ###      
+               
+               
+               
+               
+               
+               
+  #    #       
+  #    #     ##
+  #    #       
+  #    #    #  
+  #    #    #  
+  #         #  
+#############  
+[special]
+      +!       
+               
+               
+               
+               
+               
+               
+  )            
+   %%%%       #
+               
+            '  
+        %%%%   
+               
+""             
+             ""

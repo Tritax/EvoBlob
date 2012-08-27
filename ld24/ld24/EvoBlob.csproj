@@ -117,6 +117,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="States\InGame.cs" />
+    <Compile Include="States\InstructState.cs" />
     <Compile Include="States\MenuState.cs" />
     <Compile Include="States\StateBase.cs" />
   </ItemGroup>
@@ -161,6 +162,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="dat\far_spawn.level">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="dat\intro.level">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dat\level.dat">

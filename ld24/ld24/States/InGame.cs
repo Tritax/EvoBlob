@@ -253,25 +253,7 @@ namespace ld24.States
          if (_currentLevel >= _levelList.Count && _winTimer > WIN_LAPSE)
             return GameStates.Quit;
 
-         double age = 0;
-         for (int i = _projList.Count - 1; i >= 0; i--)
-         {
-            _projList[i].Update(dt);
-
-            age = _projList[i].GetAge();
-            Data.Badguy guy = _level.CheckEnemyCollideWith(_projList[i].GetBounds());
-            if (guy != null)
-            {
-               age = Data.Projectile.MAX_AGE;
-               _level.RemoveEnemy(guy);
-            }
-
-            if (age >= Data.Projectile.MAX_AGE)
-            {
-               _projList.RemoveAt(i);
-            }
-         }
-
+         UpdateProjectiles(dt);
          UpdateMovement(dt);
          if (Game1.Player.Scroll)
          {
@@ -297,14 +279,80 @@ namespace ld24.States
          }
 
          UpdateControls(dt);
+         CheckForDeath();
+         UpdateSuicide(dt);
+         UpdateParticles(dt);
 
+         return GameStates.InGame;
+      }
+
+      private void UpdateProjectiles(double dt)
+      {
+         double age = 0;
+         for (int i = _projList.Count - 1; i >= 0; i--)
+         {
+            _projList[i].Update(dt);
+
+            age = _projList[i].GetAge();
+            Data.Badguy guy = _level.CheckEnemyCollideWith(_projList[i].GetBounds());
+            if (guy != null)
+            {
+               age = Data.Projectile.MAX_AGE;
+               _level.RemoveEnemy(guy);
+            }
+            else
+            {
+               Point pt = _projList[i].GetTilePos();
+               Data.Tile tile = _level.GetAt(pt.X, pt.Y);
+               if (tile != null && !tile.Passable)
+                  age = Data.Projectile.MAX_AGE;
+            }
+
+            if (age >= Data.Projectile.MAX_AGE)
+            {
+               _projList.RemoveAt(i);
+            }
+         }
+      }
+
+      private void UpdateParticles(double dt)
+      {
+         for (int i = _particleList.Count - 1; i >= 0; i--)
+         {
+            _particleList[i].Update(dt);
+            if (_particleList[i].IsDead)
+               _particleList.RemoveAt(i);
+         }
+      }
+
+      private void UpdateSuicide(double dt)
+      {
+         if (IsButtonPress(Buttons.Y) || IsKeyPressed(Keys.A))
+            _suicideTimer += dt;
+
+         if (_suicideTimer > 0 && (IsButtonDown(Buttons.Y) || IsKeyDown(Keys.A)))
+         {
+            _vSuicide.X = (_vSuicide.X < 0 ? 2 : -2);
+            _suicideTimer += dt;
+            if (_suicideTimer > SUICIDE_TIME)
+               Die();
+         }
+         else
+         {
+            _suicideTimer = 0;
+            _vSuicide.X = 0;
+         }
+      }
+
+      private void CheckForDeath()
+      {
          Point pt = Game1.Player.GetTilePos();
          if (_level.GetAt(pt.X, pt.Y).Flags > 0)
          {
             bool death = false;
             switch (_level.GetAt(pt.X, pt.Y).Flags)
             {
-               default: 
+               default:
                case Data.Tile.FLAG_START_POS:
                case Data.Tile.FLAG_WIN_POS:
                   // Nothing
@@ -329,31 +377,6 @@ namespace ld24.States
                Die();
             }
          }
-         
-         if (IsButtonPress(Buttons.Y) || IsKeyPressed(Keys.A))
-            _suicideTimer += dt;
-         
-         if (_suicideTimer > 0 && (IsButtonDown(Buttons.Y) || IsKeyDown(Keys.A)))
-         {
-            _vSuicide.X = (_vSuicide.X < 0 ? 2 : -2);
-            _suicideTimer += dt;
-            if (_suicideTimer > SUICIDE_TIME)
-               Die();
-         }
-         else
-         {
-            _suicideTimer = 0;
-            _vSuicide.X = 0;
-         }
-
-         for (int i = _particleList.Count - 1; i >= 0; i--)
-         {
-            _particleList[i].Update(dt);
-            if (_particleList[i].IsDead)
-               _particleList.RemoveAt(i);
-         }
-
-         return GameStates.InGame;
       }
 
       private void Die()
@@ -721,7 +744,7 @@ namespace ld24.States
                break;
             case Data.Powerup.CHICKEN_EVOLVE: tex = _blobWalk; break;
             case Data.Powerup.FISH_EVOLVE: tex = _blobSwim; break;
-            case Data.Powerup.SPIDER_EVOLVE: tex = _blobClimbG; break;
+            case Data.Powerup.SPIDER_EVOLVE: tex = _attached ? _blobClimbC : _blobClimbG; break;
             case Data.Powerup.BAT_EVOLVE: tex = _blobGlide; break;
          };
 

@@ -71,6 +71,11 @@ namespace ld24.Data
       public Vector2 GetStartPosition() { return _startPos; }
       public Vector2 GetWinPos() { return _winPos; }
 
+      public void SetTileset(String tileset)
+      {
+         _tileset = tileset;
+      }
+
       public Tile GetAt(int x, int y)
       {
          if (x < 0 || x >= _width || y < 0 || y >= _height)
@@ -219,6 +224,7 @@ namespace ld24.Data
          {
             sw.WriteLine("[width]" + _width);
             sw.WriteLine("[height]" + _height);
+            sw.WriteLine("[tileset]" + _tileset);
             sw.WriteLine("[data]");
             sw.WriteLine("[tiles]");
             for (int y = 0; y < _height; y++)
@@ -318,6 +324,10 @@ namespace ld24.Data
                            }
                            
                            lvl._height = n;
+                           break;
+
+                        case "tileset":
+                           lvl._tileset = val;
                            break;
 
                         case "data":

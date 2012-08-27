@@ -29,6 +29,15 @@ namespace ld24.Data
          return new Vector2(_bounds.X, _bounds.Y);
       }
 
+      public Point GetTilePos()
+      {
+         Point pos = new Point();
+         pos.X = (int)((_bounds.X + 16) / Game1.TILE_SIZE);
+         pos.Y = (int)((_bounds.Y + 16) / Game1.TILE_SIZE);
+
+         return pos;
+      }
+
       public Rectangle GetBounds()
       {
          return _bounds;

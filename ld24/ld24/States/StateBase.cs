@@ -9,6 +9,7 @@ namespace ld24.States
    enum GameStates : byte
    {
       Menu,
+      Instruct,
       InGame,
       Quit
    }
@@ -79,6 +80,28 @@ namespace ld24.States
          }
 
          return mv;
+      }
+
+      protected Vector2 GetNavVector()
+      {
+         Vector2 nav = _curPad.ThumbSticks.Left;
+         if (nav.X == 0)
+         {
+            if (IsKeyDown(Keys.J) || IsKeyDown(Keys.Left))
+               nav.X = -1;
+            else if (IsKeyDown(Keys.L) || IsKeyDown(Keys.Right))
+               nav.X = 1;
+         }
+
+         if (nav.Y == 0)
+         {
+            if (IsKeyPressed(Keys.Down) || IsKeyPressed(Keys.K))
+               nav.Y = 1;
+            else if (IsKeyPressed(Keys.Up) || IsKeyPressed(Keys.I))
+               nav.Y = -1;
+         }
+
+         return nav;
       }
 
       protected bool IsButtonPress(Buttons btn)

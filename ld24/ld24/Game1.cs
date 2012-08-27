@@ -116,6 +116,9 @@ namespace ld24
             case States.GameStates.Menu:
                _gameState = new States.MenuState();
                break;
+            case States.GameStates.Instruct:
+               _gameState = new States.InstructState();
+               break;
             case States.GameStates.InGame:
                _gameState = new States.InGame();
                break;
