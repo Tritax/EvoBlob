@@ -17,6 +17,8 @@ namespace ld24.States
       private SpriteBatch _batch;
 
       private Texture2D _debugTex;
+      private Dictionary<string, Texture2D> _tilesetMap;
+      private Texture2D _defaultTiles;
 
       private Texture2D _blobIdle;
       private Texture2D _blobRoll;
@@ -88,7 +90,9 @@ namespace ld24.States
          _debugTex = new Texture2D(g.GraphicsDevice, 1, 1);
          _debugTex.SetData<Color>(new Color[] { Color.White });
 #endif
-         _tileSet = g.Content.Load<Texture2D>("grassy_tileset");
+         LoadTilesets(g.GraphicsDevice);
+
+         _defaultTiles = g.Content.Load<Texture2D>("grassy_tileset");
          _sky = g.Content.Load<Texture2D>("sky");
          _blobIdle = g.Content.Load<Texture2D>("bwblob_idle");
          _blobRoll = g.Content.Load<Texture2D>("bwblob");
@@ -117,6 +121,19 @@ namespace ld24.States
 
       public override void Uninit()
       {
+      }
+
+      private void LoadTilesets(GraphicsDevice dev)
+      {
+         _tilesetMap = new Dictionary<string, Texture2D>();
+
+         string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dat\\tilesets");
+         foreach (string str in Directory.GetFiles(path, "*.png"))
+         {
+            Texture2D tex = Texture2D.FromStream(dev, new FileStream(str, FileMode.Open));
+            if (tex.Width == 256 && tex.Height == 256)
+               _tilesetMap.Add(Path.GetFileNameWithoutExtension(str), tex);
+         }
       }
 
       private void ReadLevelList()
@@ -165,6 +182,12 @@ namespace ld24.States
          _level = Data.Level.FromFile(filePath);
          if (_level != null)
          {
+            string str = _level.GetTileset();
+            if (_tilesetMap.ContainsKey(str))
+               _tileSet = _tilesetMap[str];
+            else
+               _tileSet = _defaultTiles;
+
             Game1.Player.SetPosition(_level.GetStartPosition() * Game1.TILE_SIZE);
             CalculateOffsetForLevelStart();
          }

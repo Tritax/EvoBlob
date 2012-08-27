@@ -76,6 +76,11 @@ namespace ld24.Data
          _tileset = tileset;
       }
 
+      public string GetTileset()
+      {
+         return _tileset;
+      }
+
       public Tile GetAt(int x, int y)
       {
          if (x < 0 || x >= _width || y < 0 || y >= _height)

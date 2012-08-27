@@ -123,6 +123,9 @@
     <Compile Include="States\StateBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dat\tilesets\grassy_tileset.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
     <Content Include="NOTES.txt" />
