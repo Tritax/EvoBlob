@@ -224,9 +224,14 @@
          this.toolBox.TabStop = false;
          this.toolBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.toolBox_MouseClick);
          // 
+         // _sfd
+         // 
+         this._sfd.Filter = "Level Files|*.level";
+         // 
          // _ofd
          // 
          this._ofd.FileName = "openFileDialog1";
+         this._ofd.Filter = "Level Files|*.level";
          // 
          // Form1
          // 

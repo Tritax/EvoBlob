@@ -97,9 +97,9 @@ namespace ld24.States
          if (nav.Y == 0)
          {
             if (IsKeyPressed(Keys.Down) || IsKeyPressed(Keys.K))
-               nav.Y = 1;
-            else if (IsKeyPressed(Keys.Up) || IsKeyPressed(Keys.I))
                nav.Y = -1;
+            else if (IsKeyPressed(Keys.Up) || IsKeyPressed(Keys.I))
+               nav.Y = 1;
          }
 
          return nav;

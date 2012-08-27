@@ -3,9 +3,9 @@
 [tileset]grassy_tileset
 [data]
 [tiles]
-       Y,      
-      ,,,      
-               
+        ,      
+       Z,      
+      """      
                
                
                
@@ -15,13 +15,13 @@
   ,IIII,     ,,
   ,IIII,    Y  
   ,IIII,HHHH,  
-  ,IIII,IIII,  
-KK,IIIIIIIII,  
+  ,IIII,III",  
+KK,IIIIIII"",  
 ,,,,,,,,,,,,,KK
 [obstruct]
         #      
-      ###      
-               
+        #      
+      ##       
                
                
                
@@ -31,8 +31,8 @@ KK,IIIIIIIII,
   #    #     ##
   #    #       
   #    #    #  
-  #    #    #  
-  #         #  
+  #    #   ##  
+  #       ###  
 #############  
 [special]
       +!       
